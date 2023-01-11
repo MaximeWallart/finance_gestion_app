@@ -1,11 +1,68 @@
 import 'package:date_time_picker/date_time_picker.dart';
-import 'package:drop_down_list/drop_down_list.dart';
-import 'package:drop_down_list/model/selected_list_item.dart';
-import 'package:dropdown_search/dropdown_search.dart';
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:finance_gestion_app/models/app_transaction.dart';
-import 'package:finance_gestion_app/utils/firestore_getters.dart';
 import 'package:finance_gestion_app/utils/firestore_setters.dart';
 import 'package:flutter/material.dart';
+
+class testDropDown extends StatefulWidget {
+  const testDropDown({super.key});
+
+  @override
+  State<testDropDown> createState() => _testDropDownState();
+}
+
+class _testDropDownState extends State<testDropDown> {
+  late SingleValueDropDownController _cnt;
+
+  @override
+  void initState() {
+    _cnt = SingleValueDropDownController();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: DropDownTextField(
+        controller: _cnt,
+        clearOption: false,
+        enableSearch: true,
+        textFieldDecoration: InputDecoration(
+            hintText: "Type",
+            border:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(20))),
+        validator: (value) {
+          if (value == null) {
+            return "Required field";
+          } else {
+            return null;
+          }
+        },
+        dropDownItemCount: 6,
+        dropDownList: const [
+          DropDownValueModel(name: 'name1', value: "value1"),
+          DropDownValueModel(
+              name: 'name2',
+              value: "value2",
+              toolTipMsg:
+                  "DropDownButton is a widget that we can use to select one unique value from a set of values"),
+          DropDownValueModel(name: 'name3', value: "value3"),
+          DropDownValueModel(
+              name: 'name4',
+              value: "value4",
+              toolTipMsg:
+                  "DropDownButton is a widget that we can use to select one unique value from a set of values"),
+          DropDownValueModel(name: 'name5', value: "value5"),
+          DropDownValueModel(name: 'name6', value: "value6"),
+          DropDownValueModel(name: 'name7', value: "value7"),
+          DropDownValueModel(name: 'name8', value: "value8"),
+        ],
+        onChanged: (val) {},
+      ),
+    );
+  }
+}
 
 Future<void> inputFormDialog(BuildContext context, String formtitle,
     Color color, bool isRevenue, List<String> transactionTypes) async {
@@ -16,42 +73,6 @@ Future<void> inputFormDialog(BuildContext context, String formtitle,
       TextEditingController(text: DateTime.now().toString());
   TextEditingController valueController = TextEditingController();
   String transactionType = "test";
-
-  List<SelectedListItem> selectedListItems = [];
-  for (var element in transactionTypes) {
-    selectedListItems.add(SelectedListItem(name: element));
-  }
-
-  void onTextFieldTap() {
-    DropDownState(
-      DropDown(
-        // bottomSheetTitle: const Text(
-        //   kCities,
-        //   style: TextStyle(
-        //     fontWeight: FontWeight.bold,
-        //     fontSize: 20.0,
-        //   ),
-        // ),
-        submitButtonChild: const Text(
-          'Done',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        data: selectedListItems,
-        selectedItems: (List<dynamic> selectedList) {
-          List<String> list = [];
-          for (var item in selectedList) {
-            if (item is SelectedListItem) {
-              list.add(item.name);
-            }
-          }
-        },
-        enableMultipleSelection: true,
-      ),
-    ).showModal(context);
-  }
 
   showGeneralDialog(
       barrierLabel: "",
@@ -118,71 +139,49 @@ Future<void> inputFormDialog(BuildContext context, String formtitle,
                         textInputAction: TextInputAction.done,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: DropdownSearch<String>(
-                        asyncItems: (value) => getTransactionTypes("TestId"),
-                        compareFn: (i, s) => i.compareTo(s) == 0,
-                        onChanged: (value) => transactionType = value!,
-                        validator: (value) {
-                          if (value == null) {
-                            return "Type requis";
-                          } else {
-                            return null;
-                          }
-                        },
-                        dropdownDecoratorProps: DropDownDecoratorProps(
-                            dropdownSearchDecoration: InputDecoration(
-                                hintText: "Type",
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20)))),
-                        popupProps: PopupProps.menu(
-                          menuProps: MenuProps(
-                              borderRadius: BorderRadius.circular(20)),
-                          itemBuilder: (context, item, isSelected) {
-                            return Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Text(
-                                  item,
-                                  style: const TextStyle(fontSize: 15),
-                                ),
-                              ),
-                            );
-                          },
-                          emptyBuilder: (context, searchEntry) {
-                            return const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text("Pas de resultat"),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextFormField(
-                          decoration: const InputDecoration(
-                            filled: true,
-                            fillColor: Colors.black12,
-                            contentPadding: EdgeInsets.only(
-                                left: 8, bottom: 0, top: 0, right: 15),
-                            hintText: "hint",
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                width: 0,
-                                style: BorderStyle.none,
-                              ),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8.0),
-                              ),
-                            ),
-                          ),
-                          onTap: () {
-                            FocusScope.of(context).unfocus();
-                            onTextFieldTap();
-                          },
-                        )),
+                    // FAIRE UNE SUGGESTION SELON LE TITRE COMME POUR LES PHOTOS
+                    const testDropDown(),
+                    // Padding(
+                    //   padding: const EdgeInsets.all(8.0),
+                    //   child: DropdownSearch<String>(
+                    //     asyncItems: (value) => getTransactionTypes("TestId"),
+                    //     compareFn: (i, s) => i.compareTo(s) == 0,
+                    //     onChanged: (value) => transactionType = value!,
+                    //     validator: (value) {
+                    //       if (value == null) {
+                    //         return "Type requis";
+                    //       } else {
+                    //         return null;
+                    //       }
+                    //     },
+                    //     dropdownDecoratorProps: DropDownDecoratorProps(
+                    //         dropdownSearchDecoration: InputDecoration(
+                    //             hintText: "Type",
+                    //             border: OutlineInputBorder(
+                    //                 borderRadius: BorderRadius.circular(20)))),
+                    //     popupProps: PopupProps.menu(
+                    //       menuProps: MenuProps(
+                    //           borderRadius: BorderRadius.circular(20)),
+                    //       itemBuilder: (context, item, isSelected) {
+                    //         return Center(
+                    //           child: Padding(
+                    //             padding: const EdgeInsets.all(12.0),
+                    //             child: Text(
+                    //               item,
+                    //               style: const TextStyle(fontSize: 15),
+                    //             ),
+                    //           ),
+                    //         );
+                    //       },
+                    //       emptyBuilder: (context, searchEntry) {
+                    //         return const Padding(
+                    //           padding: EdgeInsets.all(8.0),
+                    //           child: Text("Pas de resultat"),
+                    //         );
+                    //       },
+                    //     ),
+                    //   ),
+                    // ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: DateTimePicker(

@@ -29,18 +29,18 @@ class _ExpenseDialogFormState extends State<ExpenseDialogForm> {
     return ElevatedButton(
       onPressed: () async {
         await inputFormDialog(
-            context, "Achat", AppColors.paymentLight, false, transactionTypes);
+            context, "Achat", AppColors.payment, false, transactionTypes);
       },
       style: ElevatedButton.styleFrom(
           minimumSize: Size(MediaQuery.of(context).size.width * 0.45,
               MediaQuery.of(context).size.width * 0.45),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12), // <-- Radius
+            borderRadius: BorderRadius.circular(24), // <-- Radius
           ),
-          backgroundColor: AppColors.paymentDark),
-      child: Icon(Icons.payment,
-          color: AppColors.paymentLight.withOpacity(0.7),
-          size: MediaQuery.of(context).size.width * 0.13),
+          backgroundColor: AppColors.payment),
+      child: Icon(Icons.payments_rounded,
+          color: Colors.black.withOpacity(0.3),
+          size: MediaQuery.of(context).size.width * 0.2),
     );
   }
 }

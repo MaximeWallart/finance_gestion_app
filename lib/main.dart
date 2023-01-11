@@ -56,36 +56,20 @@ class _NavigationState extends State<Navigation> {
           });
         },
         selectedIndex: currentPageIndex,
-        destinations: <Widget>[
-          const NavigationDestination(
+        destinations: const <Widget>[
+          NavigationDestination(
             selectedIcon: Icon(Icons.home),
             icon: Icon(Icons.home_outlined),
             label: 'Accueil',
           ),
           NavigationDestination(
-            selectedIcon: Transform.rotate(
-              angle: 90 * math.pi / 180,
-              child: const Icon(Icons.play_arrow),
-            ),
-            icon: Transform.rotate(
-              angle: 90 * math.pi / 180,
-              child: const Icon(Icons.play_arrow_outlined),
-            ),
+            icon: Icon(Icons.currency_exchange),
             label: 'Dépenses',
           ),
           NavigationDestination(
-            selectedIcon: Transform.rotate(
-                angle: 270 * math.pi / 180,
-                child: const Icon(Icons.play_arrow)),
-            icon: Transform.rotate(
-                angle: 270 * math.pi / 180,
-                child: const Icon(Icons.play_arrow_outlined)),
-            label: 'Revenus',
-          ),
-          const NavigationDestination(
             selectedIcon: Icon(Icons.person),
             icon: Icon(Icons.person_outlined),
-            label: 'Je sais pas',
+            label: 'Personalisation',
           ),
         ],
       ),
@@ -104,6 +88,7 @@ class _NavigationState extends State<Navigation> {
         ),
       ][currentPageIndex],
       floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add_card_outlined),
         onPressed: () {
           addTransaction(AppTransaction(
               date: DateTime.now(),

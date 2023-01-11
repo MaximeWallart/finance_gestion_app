@@ -1,12 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_gestion_app/models/app_transaction.dart';
+import 'package:finance_gestion_app/utils/data_changer.dart';
 import 'package:finance_gestion_app/widgets/transaction_widget.dart';
 import 'package:flutter/material.dart';
 
 class GetBalance extends StatelessWidget {
-  const GetBalance({super.key, required this.documentId});
+  const GetBalance(
+      {super.key,
+      required this.documentId,
+      this.style = const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)});
 
   final String documentId;
+  final TextStyle style;
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +33,8 @@ class GetBalance extends StatelessWidget {
           Map<String, dynamic> data =
               snapshot.data!.data() as Map<String, dynamic>;
           return Text(
-            "${data['Balance']}€",
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: MediaQuery.of(context).size.width * 0.12),
+            "${formatNumber(int.parse(data['Balance'].toString()))} €",
+            style: style,
           );
         }
 

@@ -13,6 +13,23 @@ extension ToString on double {
   }
 }
 
+String formatNumber(int number) {
+    if (number == null) return '...'; //for those like me who don't use null-safety
+
+    String result = '';
+    int digit = 1; //to know when to add a space or not
+    while (number > 0) {
+      if (digit > 1 && digit % 3 == 1) //don't add a space at the very beginning
+        result = (number % 10).toString() + ' ' + result;
+      else
+        result = (number % 10).toString() + result;
+
+      digit++;
+      number = number ~/ 10; //divides by 10, in other words, shifts 1 digit to the right
+    }
+    return result;
+  }
+
 extension changeString on DateTime {
   String toStringWithWords() {
     if (DateTime.now()
