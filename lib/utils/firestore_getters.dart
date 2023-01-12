@@ -57,6 +57,21 @@ Future<List<String>> getTransactionTypes(String docId) async {
   return types;
 }
 
+Future<List<AppTransaction>> getAppTransactions(String docId) async {
+  List<AppTransaction> transactions = [];
+  var doc = FirebaseFirestore.instance.collection('Users').doc(docId);
+  DocumentSnapshot documentSnapshot = await doc.get();
+  if (documentSnapshot.exists) {
+    Map<String, dynamic> optionsDoc =
+        documentSnapshot.data() as Map<String, dynamic>;
+    List experiences = optionsDoc['Transactions'];
+    for (var element in experiences) {
+      transactions.add(AppTransaction.fromJson(element));
+    }
+  }
+  return transactions;
+}
+
 class GetTransactions extends StatefulWidget {
   const GetTransactions(
       {super.key, required this.documentId, required this.assetsList});

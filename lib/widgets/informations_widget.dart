@@ -1,9 +1,16 @@
+import 'package:finance_gestion_app/models/app_transaction.dart';
 import 'package:finance_gestion_app/style/app_colors.dart';
+import 'package:finance_gestion_app/utils/data_getters.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+
+import '../utils/data_changer.dart';
 
 class InformationsWidget extends StatelessWidget {
   const InformationsWidget(
-      {super.key, this.backgroundColor = AppColors.classicGrey, required this.child});
+      {super.key,
+      this.backgroundColor = AppColors.classicGrey,
+      required this.child});
 
   final Color backgroundColor;
   final Widget child;
@@ -38,5 +45,110 @@ class InformationTextWidget extends StatelessWidget {
             fontSize: MediaQuery.of(context).size.width * 0.05),
       )
     ]);
+  }
+}
+
+class TransactionPieChart extends StatefulWidget {
+  const TransactionPieChart({super.key});
+
+  @override
+  State<TransactionPieChart> createState() => _TransactionPieChartState();
+}
+
+class _TransactionPieChartState extends State<TransactionPieChart> {
+  List<PieChartSectionData> pieChartSectionDataList = [
+    PieChartSectionData(
+        title: "test", value: 100, color: AppColors.listCharColors[0])
+  ];
+  List<AppTransaction> transactionsMonth = [];
+
+  int touchedIndex = 1;
+
+  Future<void> initTransaction() async {
+    transactionsMonth = await getTransactionFromMonth(DateTime.november);
+  }
+
+  Future<void> initPieChartDataList() async {
+    setState(() {
+      pieChartSectionDataList.clear();
+    });
+    int i = 0;
+    getPieChartData(transactionsMonth).forEach((key, value) {
+      bool isTouched = i == touchedIndex;
+      final radius = isTouched ? 40.0 : 30.0;
+      setState(() {
+        pieChartSectionDataList.add(PieChartSectionData(
+            title: key,
+            value: value,
+            radius: radius,
+            showTitle: false,
+            color: AppColors.listCharColors[i]));
+        i++;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    initTransaction().then((value) {
+      initPieChartDataList();
+      selectedValue = pieChartSectionDataList[0].title;
+      percentageSelected = "${pieChartSectionDataList[0].value}%";
+    });
+    super.initState();
+  }
+
+  List<PieChartSectionData> showingSections() {
+    setState(() {
+      initPieChartDataList();
+    });
+    return pieChartSectionDataList;
+  }
+
+  String selectedValue = "";
+  String percentageSelected = "";
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Stack(children: [
+        Center(
+            child: InformationTextWidget(
+          number: Text(percentageSelected,
+              style: TextStyle(
+                  fontFamily: 'Lato',
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black.withOpacity(0.33),
+                  fontSize: MediaQuery.of(context).size.width * 0.1)),
+          subtext: selectedValue,
+        )),
+        PieChart(
+          PieChartData(
+              sectionsSpace: 0,
+              centerSpaceRadius: 100,
+              sections: showingSections(), //pieChartSectionData,
+              pieTouchData: PieTouchData(
+                enabled: true,
+                touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                  setState(() {
+                    if (pieTouchResponse != null &&
+                        pieTouchResponse.touchedSection!.touchedSection !=
+                            null) {
+                      touchedIndex =
+                          pieTouchResponse.touchedSection!.touchedSectionIndex;
+                      selectedValue = pieTouchResponse
+                          .touchedSection!.touchedSection!.title;
+                      percentageSelected =
+                          "${pieTouchResponse.touchedSection!.touchedSection!.value}%";
+                    }
+                  });
+                },
+              )),
+          swapAnimationDuration: const Duration(milliseconds: 150),
+          swapAnimationCurve: Curves.linear,
+        ),
+      ]),
+    );
   }
 }

@@ -15,6 +15,29 @@ class AppColors {
   static const available = Color(0xFFFFF4BB);
   static const classicGrey = Color(0xFFDCDCDC);
 
+  static const List<Color> listCharColors = [
+    Color(0xFF3366CC),
+    Color(0xFFDC3912),
+    Color(0xFFFF9900),
+    Color(0xFF109618),
+    Color(0xFF990099),
+    Color(0xFF3B3EAC),
+    Color(0xFF0099C6),
+    Color(0xFFDD4477),
+    Color(0xFF66AA00),
+    Color(0xFFB82E2E),
+    Color(0xFF316395),
+    Color(0xFF994499),
+    Color(0xFF22AA99),
+    Color(0xFFAAAA11),
+    Color(0xFF6633CC),
+    Color(0xFFE67300),
+    Color(0xFF8B0707),
+    Color(0xFF329262),
+    Color(0xFF5574A6),
+    Color(0xFF3B3EAC)
+  ];
+
   static Color amountVariantColor(double value, bool isRevenue) {
     int max = 150;
     if (isRevenue == false) {

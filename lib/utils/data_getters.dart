@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:finance_gestion_app/models/app_transaction.dart';
+import 'package:finance_gestion_app/utils/firestore_getters.dart';
 import 'package:flutter/services.dart';
 
 Future<List<String>> loadAssetsList() async {
@@ -14,4 +16,10 @@ Future<List<String>> loadAssetsList() async {
       .toList();
 
   return imagePaths;
+}
+
+Future<List<AppTransaction>> getTransactionFromMonth(int month) async {
+  List<AppTransaction> transactions = await getAppTransactions("TestId");
+  transactions.removeWhere((element) => element.date.month != month);
+  return transactions;
 }
