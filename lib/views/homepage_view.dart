@@ -1,4 +1,6 @@
+import 'package:finance_gestion_app/models/app_transaction.dart';
 import 'package:finance_gestion_app/style/app_colors.dart';
+import 'package:finance_gestion_app/utils/data_changer.dart';
 import 'package:finance_gestion_app/utils/firestore_getters.dart';
 import 'package:finance_gestion_app/widgets/expense_dialog_form.dart';
 import 'package:finance_gestion_app/widgets/informations_widget.dart';
@@ -7,6 +9,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
+
+import '../modified/awesome_dropdown.dart';
 
 class HomepageView extends StatefulWidget {
   const HomepageView({super.key, required this.user});
@@ -18,79 +22,111 @@ class HomepageView extends StatefulWidget {
 }
 
 class _HomepageViewState extends State<HomepageView> {
+  List<String> monthsCalendarList = ["void"];
+
+  Future<void> initMonthsCalendarList() async {
+    List<AppTransaction> value = await getAppTransactions("TestId");
+    setState(() {
+      monthsCalendarList =
+          getMonthsCalendarTransactions(value).reversed.toList();
+    });
+  }
+
+  int balance = 0;
+
+  Future<void> initBalance() async {
+    balance = await getBalance("TestId");
+    setState(() {});
+  }
+
   @override
   void initState() {
+    initMonthsCalendarList();
+    initBalance();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // Center(
-          //   child: Padding(
-          //     padding: EdgeInsets.symmetric(
-          //         horizontal: 8,
-          //         vertical: MediaQuery.of(context).size.width * 0.2),
-          //     child: Column(
-          //       children: [
-          //         CircleAvatar(
-          //             backgroundImage: NetworkImage(widget.user.photoURL!)),
-          //         Text("Bonjour ${widget.user.displayName!} !")
-          //       ],
-          //     ),
-          //   ),
-          // ),
-          Container(
-            height: 50,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: StaggeredGrid.count(
-              crossAxisCount: 4,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              children: [
-                StaggeredGridTile.count(
-                  crossAxisCellCount: 4,
-                  mainAxisCellCount: 1,
-                  child: InformationsWidget(child: Container()),
-                ),
-                const StaggeredGridTile.count(
-                  crossAxisCellCount: 3,
-                  mainAxisCellCount: 3,
-                  child: InformationsWidget(child: TransactionPieChart()),
-                ),
-                StaggeredGridTile.count(
-                  crossAxisCellCount: 1,
-                  mainAxisCellCount: 1,
-                  child: InformationsWidget(
-                      child: LiquidLinearProgressIndicator(
-                    value: 0.54,
-                    valueColor: const AlwaysStoppedAnimation(AppColors.earning),
-                    backgroundColor: AppColors
-                        .classicGrey, // Defaults to the current Theme's backgroundColor.
-                    borderColor: AppColors.classicGrey,
-                    borderWidth: 1.0,
-                    borderRadius: 24.0,
-                    direction: Axis
-                        .vertical, // The direction the liquid moves (Axis.vertical = bottom to top, Axis.horizontal = left to right). Defaults to Axis.horizontal.
-                    center: Text("54%",
-                        style: TextStyle(
-                            fontFamily: 'Lato',
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black.withOpacity(0.33),
-                            fontSize:
-                                MediaQuery.of(context).size.width * 0.075)),
-                  )),
-                ),
-                StaggeredGridTile.count(
-                  crossAxisCellCount: 1,
-                  mainAxisCellCount: 1,
-                  child: InformationsWidget(
-                      child: Container(
-                    child: Stack(children: [
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Center(
+            //   child: Padding(
+            //     padding: EdgeInsets.symmetric(
+            //         horizontal: 8,
+            //         vertical: MediaQuery.of(context).size.width * 0.2),
+            //     child: Column(
+            //       children: [
+            //         CircleAvatar(
+            //             backgroundImage: NetworkImage(widget.user.photoURL!)),
+            //         Text("Bonjour ${widget.user.displayName!} !")
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: StaggeredGrid.count(
+                crossAxisCount: 4,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                children: [
+                  StaggeredGridTile.count(
+                    crossAxisCellCount: 4,
+                    mainAxisCellCount: 1,
+                    child: InformationsWidget(
+                        child: AwesomeDropDown(
+                      dropDownList: monthsCalendarList,
+                      dropDownBGColor: Colors.transparent,
+                      elevation: 0,
+                      dropDownListTextStyle: TextStyle(
+                          fontFamily: 'Lato',
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black.withOpacity(0.33),
+                          fontSize: MediaQuery.of(context).size.width * 0.045),
+                      selectedItemTextStyle: TextStyle(
+                          fontFamily: 'Lato',
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black.withOpacity(0.33),
+                          fontSize: MediaQuery.of(context).size.width * 0.075),
+                    )),
+                  ),
+                  const StaggeredGridTile.count(
+                    crossAxisCellCount: 3,
+                    mainAxisCellCount: 3,
+                    child: InformationsWidget(child: TransactionPieChart()),
+                  ),
+                  StaggeredGridTile.count(
+                    crossAxisCellCount: 1,
+                    mainAxisCellCount: 1,
+                    child: InformationsWidget(
+                        child: LiquidLinearProgressIndicator(
+                      value: 0.54,
+                      valueColor:
+                          const AlwaysStoppedAnimation(AppColors.earning),
+                      backgroundColor: AppColors
+                          .classicGrey, // Defaults to the current Theme's backgroundColor.
+                      borderColor: AppColors.classicGrey,
+                      borderWidth: 1.0,
+                      borderRadius: 24.0,
+                      direction: Axis
+                          .vertical, // The direction the liquid moves (Axis.vertical = bottom to top, Axis.horizontal = left to right). Defaults to Axis.horizontal.
+                      center: Text("54%",
+                          style: TextStyle(
+                              fontFamily: 'Lato',
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black.withOpacity(0.33),
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.075)),
+                    )),
+                  ),
+                  StaggeredGridTile.count(
+                    crossAxisCellCount: 1,
+                    mainAxisCellCount: 1,
+                    child: InformationsWidget(
+                        child: Stack(children: [
                       ClipPath(
                           clipper: _LinearClipper(
                             radius: 24,
@@ -107,81 +143,59 @@ class _HomepageViewState extends State<HomepageView> {
                                 fontSize:
                                     MediaQuery.of(context).size.width * 0.075)),
                       )
-                    ]),
-                  )),
-                ),
-                StaggeredGridTile.count(
-                  crossAxisCellCount: 1,
-                  mainAxisCellCount: 1,
-                  child: InformationsWidget(
-                      child: Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
-                              gradient: LinearGradient(
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
-                                  colors: [
-                                    Colors.red.withOpacity(0.75),
-                                    Colors.white.withOpacity(0.2)
-                                  ])),
-                          child: InformationTextWidget(
-                            number: Text("48",
-                                style: TextStyle(
-                                    fontFamily: 'Lato',
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black.withOpacity(0.33),
-                                    fontSize:
-                                        MediaQuery.of(context).size.width *
-                                            0.1)),
-                            subtext: "Jours",
-                          ))),
-                ),
-                StaggeredGridTile.count(
-                    crossAxisCellCount: 2,
+                    ])),
+                  ),
+                  StaggeredGridTile.count(
+                    crossAxisCellCount: 1,
                     mainAxisCellCount: 1,
                     child: InformationsWidget(
-                      backgroundColor: AppColors.available,
-                      child: InformationTextWidget(
-                          number: GetBalance(
-                              documentId: "TestId",
-                              style: TextStyle(
-                                  fontFamily: 'Lato',
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black.withOpacity(0.33),
-                                  fontSize:
-                                      MediaQuery.of(context).size.width * 0.1)),
-                          subtext: "Disponible"),
-                    )),
-                StaggeredGridTile.count(
-                    crossAxisCellCount: 2,
-                    mainAxisCellCount: 1,
-                    child: InformationsWidget(
-                        backgroundColor: AppColors.economy,
+                        child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(24),
+                                gradient: LinearGradient(
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                    colors: [
+                                      AppColors.payment,
+                                      Colors.white.withOpacity(0.2)
+                                    ])),
+                            child: InformationTextWidget(
+                              number: "48",
+                              subtext: "Jours",
+                            ))),
+                  ),
+                  StaggeredGridTile.count(
+                      crossAxisCellCount: 2,
+                      mainAxisCellCount: 1,
+                      child: InformationsWidget(
+                        backgroundColor: AppColors.available,
                         child: InformationTextWidget(
-                          number: Text(
-                            "573 €",
-                            style: TextStyle(
-                                fontFamily: 'Lato',
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black.withOpacity(0.33),
-                                fontSize:
-                                    MediaQuery.of(context).size.width * 0.1),
-                          ),
-                          subtext: "Économisés",
-                        ))),
-              ],
+                            number: "$balance €", subtext: "Disponible"),
+                      )),
+                  StaggeredGridTile.count(
+                      crossAxisCellCount: 2,
+                      mainAxisCellCount: 1,
+                      child: InformationsWidget(
+                          backgroundColor: AppColors.economy,
+                          child: InformationTextWidget(
+                            number: "573 €",
+                            subtext: "Économisés",
+                          ))),
+                ],
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Divider(thickness: 3, color: Colors.black.withOpacity(0.3)),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: const [RevenueDialogForm(), ExpenseDialogForm()],
-          )
-        ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child:
+                  Divider(thickness: 3, color: Colors.black.withOpacity(0.3)),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: const [RevenueDialogForm(), ExpenseDialogForm()],
+            )
+          ],
+        ),
       ),
     );
   }

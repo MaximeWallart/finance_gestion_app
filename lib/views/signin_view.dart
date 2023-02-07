@@ -59,7 +59,7 @@ class _SignInViewState extends State<SignInView> {
                   }
                   return const CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      AppColors.earningLight,
+                      AppColors.earning
                     ),
                   );
                 },

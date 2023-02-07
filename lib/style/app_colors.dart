@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const backgoundColor = Color(0xFFEEE8F4);
+  static const backgoundColor = Colors.white;
   static const accentColor = Color(0xFFDAE9F6);
   static const accentColorDark = Color(0xFFFDFF9A);
   static const accentColorLight = Color(0xFF5B417B);
 
-  static const earningLight = Color(0xFFE8F4E8);
-  static const earning = Color(0xFF9FD19F);
-  static const paymentLight = Color(0xFFF4EAE8);
-  static const payment = Color(0xFFCA9A91);
+  static const earning = Color(0xFF6FE16F);
+  static const payment = Color(0xFFE8674F);
 
-  static const economy = Color(0xFFC6E4FF);
-  static const available = Color(0xFFFFF4BB);
+  static const economy = Color(0xFF80C3FF);
+  static const available = Color(0xFFFFEC8A);
   static const classicGrey = Color(0xFFDCDCDC);
 
   static const List<Color> listCharColors = [

@@ -1,7 +1,9 @@
 import 'package:finance_gestion_app/style/app_colors.dart';
-import 'package:finance_gestion_app/utils/data_getters.dart';
+import 'package:finance_gestion_app/utils/data_changer.dart';
+import 'package:finance_gestion_app/utils/firestore_getters.dart';
 import 'package:finance_gestion_app/views/expenses_view.dart';
 import 'package:finance_gestion_app/views/homepage_view.dart';
+import 'package:finance_gestion_app/views/parameters_view.dart';
 import 'package:finance_gestion_app/views/signin_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -74,22 +76,19 @@ class _NavigationState extends State<Navigation> {
       body: <Widget>[
         HomepageView(user: widget.user),
         const ExpensesView(),
-        Container(
-          color: Colors.blue,
-          alignment: Alignment.center,
-          child: const Text('Page 3'),
-        ),
+        const ParametersView(),
       ][currentPageIndex],
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add_card_outlined),
-        onPressed: () {
+        onPressed: () async {
           // addTransaction(AppTransaction(
           //     date: DateTime.now(),
           //     value: 20,
           //     title: "title",
           //     type: "type",
           //     isRevenue: false));
-          getTransactionFromMonth(DateTime.november);
+          await getAppTransactions("TestId")
+              .then((value) => getMonthsCalendarTransactions(value));
         },
       ),
     );

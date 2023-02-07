@@ -4,44 +4,16 @@ import 'package:finance_gestion_app/utils/data_changer.dart';
 import 'package:finance_gestion_app/widgets/transaction_widget.dart';
 import 'package:flutter/material.dart';
 
-class GetBalance extends StatelessWidget {
-  const GetBalance(
-      {super.key,
-      required this.documentId,
-      this.style = const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)});
-
-  final String documentId;
-  final TextStyle style;
-
-  @override
-  Widget build(BuildContext context) {
-    CollectionReference users = FirebaseFirestore.instance.collection('Users');
-
-    return FutureBuilder<DocumentSnapshot>(
-      future: users.doc(documentId).get(),
-      builder:
-          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return const Text("Something went wrong");
-        }
-
-        if (snapshot.hasData && !snapshot.data!.exists) {
-          return const Text("Document does not exist");
-        }
-
-        if (snapshot.connectionState == ConnectionState.done) {
-          Map<String, dynamic> data =
-              snapshot.data!.data() as Map<String, dynamic>;
-          return Text(
-            "${formatNumber(int.parse(data['Balance'].toString()))} €",
-            style: style,
-          );
-        }
-
-        return const Text("loading");
-      },
-    );
+Future<int> getBalance(String docId) async {
+  int result = 0;
+  var doc = FirebaseFirestore.instance.collection('Users').doc(docId);
+  DocumentSnapshot documentSnapshot = await doc.get();
+  if (documentSnapshot.exists) {
+    Map<String, dynamic> optionsDoc =
+        documentSnapshot.data() as Map<String, dynamic>;
+    result = int.parse(optionsDoc['Balance'].toString());
   }
+  return result;
 }
 
 Future<List<String>> getTransactionTypes(String docId) async {

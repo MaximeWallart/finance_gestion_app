@@ -26,16 +26,27 @@ class InformationsWidget extends StatelessWidget {
 }
 
 class InformationTextWidget extends StatelessWidget {
-  const InformationTextWidget(
-      {super.key, required this.number, required this.subtext});
+  InformationTextWidget(
+      {super.key,
+      required this.number,
+      this.numberFontSize = 41,
+      required this.subtext});
 
-  final Widget number;
+  final String number;
+  double numberFontSize;
   final String subtext;
 
   @override
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-      number,
+      Text(
+        number,
+        style: TextStyle(
+            fontFamily: 'Lato',
+            fontWeight: FontWeight.bold,
+            color: Colors.black.withOpacity(0.33),
+            fontSize: numberFontSize),
+      ),
       Text(
         subtext,
         style: TextStyle(
@@ -62,7 +73,7 @@ class _TransactionPieChartState extends State<TransactionPieChart> {
   ];
   List<AppTransaction> transactionsMonth = [];
 
-  int touchedIndex = 1;
+  int touchedIndex = 0;
 
   Future<void> initTransaction() async {
     transactionsMonth = await getTransactionFromMonth(DateTime.november);
@@ -115,12 +126,8 @@ class _TransactionPieChartState extends State<TransactionPieChart> {
       child: Stack(children: [
         Center(
             child: InformationTextWidget(
-          number: Text(percentageSelected,
-              style: TextStyle(
-                  fontFamily: 'Lato',
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black.withOpacity(0.33),
-                  fontSize: MediaQuery.of(context).size.width * 0.1)),
+          number: percentageSelected,
+          numberFontSize: MediaQuery.of(context).size.width * 0.13,
           subtext: selectedValue,
         )),
         PieChart(

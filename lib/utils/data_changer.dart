@@ -84,6 +84,37 @@ extension changeString on DateTime {
       return "$day/$month";
     }
   }
+
+  String getMonthString() {
+    switch (month) {
+      case 1:
+        return "Janvier";
+      case 2:
+        return "Février";
+      case 3:
+        return "Mars";
+      case 4:
+        return "Avril";
+      case 5:
+        return "Mai";
+      case 6:
+        return "Juin";
+      case 7:
+        return "Juillet";
+      case 8:
+        return "Août";
+      case 9:
+        return "Septembre";
+      case 10:
+        return "Octobre";
+      case 11:
+        return "Novembre";
+      case 12:
+        return "Décembre";
+      default:
+        return "";
+    }
+  }
 }
 
 Map<String, double> getPieChartData(List<AppTransaction> transactions) {
@@ -99,5 +130,17 @@ Map<String, double> getPieChartData(List<AppTransaction> transactions) {
   result.forEach((key, value) {
     result.update(key, (value) => (value / total) * 100);
   });
+  return result;
+}
+
+List<String> getMonthsCalendarTransactions(List<AppTransaction> transaction) {
+  List<String> result = [];
+  for (var element in transaction) {
+    String tmp = "${element.date.getMonthString()} ${element.date.year}";
+    if (!result.contains(tmp)) {
+      result.add(tmp);
+    }
+  }
+  print(result);
   return result;
 }
