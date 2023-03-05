@@ -60,7 +60,9 @@ class InformationTextWidget extends StatelessWidget {
 }
 
 class TransactionPieChart extends StatefulWidget {
-  const TransactionPieChart({super.key});
+  const TransactionPieChart({super.key, required this.selectedMonth});
+
+  final String selectedMonth;
 
   @override
   State<TransactionPieChart> createState() => _TransactionPieChartState();
@@ -76,7 +78,7 @@ class _TransactionPieChartState extends State<TransactionPieChart> {
   int touchedIndex = 0;
 
   Future<void> initTransaction() async {
-    transactionsMonth = await getTransactionFromMonth(DateTime.november);
+    transactionsMonth = await getTransactionFromMonth(getMonthInt(widget.selectedMonth));
   }
 
   Future<void> initPieChartDataList() async {

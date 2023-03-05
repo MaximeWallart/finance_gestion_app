@@ -5,13 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../models/app_transaction.dart';
+import 'input_dialog_form.dart';
 
 class TransactionWidget extends StatefulWidget {
   const TransactionWidget(
-      {super.key, required this.transaction, required this.assetsList});
+      {super.key,
+      required this.transaction,
+      required this.assetsList,
+      this.notifyParent});
 
   final AppTransaction transaction;
   final List<String> assetsList;
+  final Function()? notifyParent;
 
   @override
   State<TransactionWidget> createState() => _TransactionWidgetState();
@@ -50,16 +55,17 @@ class _TransactionWidgetState extends State<TransactionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
+    validateToAnImage();
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
       child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.1,
+        height: MediaQuery.of(context).size.height * 0.09,
         child: Slidable(
           startActionPane: ActionPane(motion: const ScrollMotion(), children: [
             SlidableAction(
               onPressed: (context) async {
                 deleteTransaction(widget.transaction);
-                setState(() {});
+                widget.notifyParent!();
               },
               backgroundColor: const Color(0xFFFE4A49),
               foregroundColor: Colors.white,
@@ -67,7 +73,16 @@ class _TransactionWidgetState extends State<TransactionWidget> {
               label: 'Supprimer',
             ),
             SlidableAction(
-              onPressed: (context) {},
+              onPressed: (context) async {
+                await inputFormDialog(
+                    context,
+                    widget.transaction.isRevenue ? "Revenu" : "Achat",
+                    widget.transaction.isRevenue
+                        ? AppColors.earning
+                        : AppColors.payment,
+                    widget.transaction.isRevenue,
+                    transaction: widget.transaction);
+              },
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,
               icon: Icons.mode,
@@ -89,16 +104,30 @@ class _TransactionWidgetState extends State<TransactionWidget> {
               fit: BoxFit.fill,
               child: Row(
                 children: <Widget>[
-                  Text(widget.transaction.date.toStringWithWords()),
-                  const VerticalDivider(),
                   Text(
-                      "${widget.transaction.isRevenue ? "+" : "-"} ${widget.transaction.value.toStringWithMaxPrecision()}€",
-                      textHeightBehavior: const TextHeightBehavior(),
-                      style: TextStyle(
-                          fontSize: 15,
-                          color: AppColors.amountVariantColor(
+                    widget.transaction.date.toStringWithWords(),
+                    style: const TextStyle(color: AppColors.textLightBlack),
+                  ),
+                  const VerticalDivider(),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: AppColors.amountVariantColor(
                               widget.transaction.value,
-                              widget.transaction.isRevenue))),
+                              widget.transaction.isRevenue)
+                          .withOpacity(0.2),
+                    ),
+                    child: Text(
+                        "${widget.transaction.isRevenue ? "+" : "-"} ${widget.transaction.value.toStringWithMaxPrecision()}€",
+                        textHeightBehavior: const TextHeightBehavior(),
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: AppColors.amountVariantColor(
+                                widget.transaction.value,
+                                widget.transaction.isRevenue))),
+                  ),
                 ],
               ),
             ),

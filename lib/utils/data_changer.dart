@@ -117,6 +117,37 @@ extension changeString on DateTime {
   }
 }
 
+int getMonthInt(String month) {
+  switch (month) {
+    case "Janvier":
+      return 1;
+    case "Février":
+      return 2;
+    case "Mars":
+      return 3;
+    case "Avril":
+      return 4;
+    case "Mai":
+      return 5;
+    case "Juin":
+      return 6;
+    case "Juillet":
+      return 7;
+    case "Août":
+      return 8;
+    case "Septembre":
+      return 9;
+    case "Octobre":
+      return 10;
+    case "Novembre":
+      return 11;
+    case "Décembre":
+      return 12;
+    default:
+      return 0;
+  }
+}
+
 Map<String, double> getPieChartData(List<AppTransaction> transactions) {
   Map<String, double> result = {};
   int total = 0;

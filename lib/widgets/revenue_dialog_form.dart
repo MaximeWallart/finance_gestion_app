@@ -2,7 +2,6 @@ import 'package:finance_gestion_app/widgets/input_dialog_form.dart';
 import 'package:flutter/material.dart';
 
 import '../style/app_colors.dart';
-import '../utils/firestore_getters.dart';
 
 class RevenueDialogForm extends StatefulWidget {
   const RevenueDialogForm({super.key});
@@ -12,24 +11,11 @@ class RevenueDialogForm extends StatefulWidget {
 }
 
 class _RevenueDialogFormState extends State<RevenueDialogForm> {
-  List<String> transactionTypes = [];
-
-  void initTransactionTypes() async {
-    transactionTypes = await getTransactionTypes("TestId");
-  }
-
-  @override
-  void initState() {
-    initTransactionTypes();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
-        await inputFormDialog(
-            context, "Revenu", AppColors.earning, true, transactionTypes);
+        await inputFormDialog(context, "Revenu", AppColors.earning, true);
       },
       style: ElevatedButton.styleFrom(
           minimumSize: Size(MediaQuery.of(context).size.width * 0.45,

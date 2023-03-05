@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_gestion_app/models/app_transaction.dart';
-import 'package:finance_gestion_app/utils/data_changer.dart';
 import 'package:finance_gestion_app/widgets/transaction_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +15,8 @@ Future<int> getBalance(String docId) async {
   return result;
 }
 
-Future<List<String>> getTransactionTypes(String docId) async {
+Future<List<String>> getTransactionTypes(String docId,
+    [String withoutThisOne = ""]) async {
   List<String> types = [];
   var doc = FirebaseFirestore.instance.collection('Users').doc(docId);
   DocumentSnapshot documentSnapshot = await doc.get();
@@ -26,10 +26,14 @@ Future<List<String>> getTransactionTypes(String docId) async {
     List<dynamic> counterList = optionsDoc['Types'];
     types = counterList.map((type) => type.toString()).toList();
   }
+  if (withoutThisOne != "") {
+    types.remove(withoutThisOne);
+  }
   return types;
 }
 
-Future<List<AppTransaction>> getAppTransactions(String docId) async {
+Future<List<AppTransaction>> getAppTransactions(String docId,
+    [String transactionType = ""]) async {
   List<AppTransaction> transactions = [];
   var doc = FirebaseFirestore.instance.collection('Users').doc(docId);
   DocumentSnapshot documentSnapshot = await doc.get();
@@ -38,7 +42,14 @@ Future<List<AppTransaction>> getAppTransactions(String docId) async {
         documentSnapshot.data() as Map<String, dynamic>;
     List experiences = optionsDoc['Transactions'];
     for (var element in experiences) {
-      transactions.add(AppTransaction.fromJson(element));
+      AppTransaction transaction = AppTransaction.fromJson(element);
+      if (transactionType != "") {
+        if (transaction.type == transactionType) {
+          transactions.add(transaction);
+        }
+      } else {
+        transactions.add(transaction);
+      }
     }
   }
   return transactions;
@@ -73,8 +84,9 @@ class _GetTransactionsState extends State<GetTransactions> {
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
-          List experiences = List.from(snapshot.data!
-              .get('Transactions')); // This line should be inside if block
+          List experiences = List.from(snapshot.data!.get('Transactions'))
+              .reversed
+              .toList(); // This line should be inside if block
           return ListView.builder(
               itemCount: experiences.length,
               itemBuilder: ((context, index) {

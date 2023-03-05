@@ -23,3 +23,12 @@ Future<List<AppTransaction>> getTransactionFromMonth(int month) async {
   transactions.removeWhere((element) => element.date.month != month);
   return transactions;
 }
+
+Future<bool> anyTransactionsUseTransactionType(String transactionType) async {
+  List<AppTransaction> transactions =
+      await getAppTransactions("TestId", transactionType);
+  if (transactions.isNotEmpty) {
+    return true;
+  }
+  return false;
+}

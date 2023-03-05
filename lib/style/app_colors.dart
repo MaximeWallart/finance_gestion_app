@@ -11,7 +11,11 @@ class AppColors {
 
   static const economy = Color(0xFF80C3FF);
   static const available = Color(0xFFFFEC8A);
-  static const classicGrey = Color(0xFFDCDCDC);
+  static const classicGrey = Color.fromARGB(255, 239, 239, 239);
+
+  static const textRegularBlack = Color.fromARGB(255, 0, 0, 0);
+  static const textLightBlack = Color.fromARGB(255, 117, 117, 117);
+  static const textLighterBlack = Color.fromARGB(255, 151, 151, 151);
 
   static const List<Color> listCharColors = [
     Color(0xFF3366CC),

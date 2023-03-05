@@ -1,4 +1,3 @@
-import 'package:finance_gestion_app/utils/firestore_getters.dart';
 import 'package:finance_gestion_app/widgets/input_dialog_form.dart';
 import 'package:flutter/material.dart';
 
@@ -12,24 +11,11 @@ class ExpenseDialogForm extends StatefulWidget {
 }
 
 class _ExpenseDialogFormState extends State<ExpenseDialogForm> {
-  List<String> transactionTypes = [];
-
-  void initTransactionTypes() async {
-    transactionTypes = await getTransactionTypes("TestId");
-  }
-
-  @override
-  void initState() {
-    initTransactionTypes();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
-        await inputFormDialog(
-            context, "Achat", AppColors.payment, false, transactionTypes);
+        await inputFormDialog(context, "Achat", AppColors.payment, false);
       },
       style: ElevatedButton.styleFrom(
           minimumSize: Size(MediaQuery.of(context).size.width * 0.45,

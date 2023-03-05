@@ -1,6 +1,7 @@
 import 'package:finance_gestion_app/style/app_colors.dart';
 import 'package:finance_gestion_app/utils/data_changer.dart';
 import 'package:finance_gestion_app/utils/firestore_getters.dart';
+import 'package:finance_gestion_app/utils/firestore_setters.dart';
 import 'package:finance_gestion_app/views/expenses_view.dart';
 import 'package:finance_gestion_app/views/homepage_view.dart';
 import 'package:finance_gestion_app/views/parameters_view.dart';
@@ -8,6 +9,8 @@ import 'package:finance_gestion_app/views/signin_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+
+import 'models/app_transaction.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -81,14 +84,14 @@ class _NavigationState extends State<Navigation> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add_card_outlined),
         onPressed: () async {
-          // addTransaction(AppTransaction(
-          //     date: DateTime.now(),
-          //     value: 20,
-          //     title: "title",
-          //     type: "type",
-          //     isRevenue: false));
-          await getAppTransactions("TestId")
-              .then((value) => getMonthsCalendarTransactions(value));
+          addTransaction(AppTransaction(
+              date: DateTime.now(),
+              value: 20,
+              title: "title",
+              type: "type",
+              isRevenue: false));
+          // await getAppTransactions("TestId")
+          //     .then((value) => getMonthsCalendarTransactions(value));
         },
       ),
     );

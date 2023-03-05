@@ -4,6 +4,8 @@ import 'package:finance_gestion_app/models/app_transaction.dart';
 import 'package:finance_gestion_app/utils/firestore_setters.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/firestore_getters.dart';
+
 class testDropDown extends StatefulWidget {
   const testDropDown({super.key});
 
@@ -14,10 +16,23 @@ class testDropDown extends StatefulWidget {
 class _testDropDownState extends State<testDropDown> {
   late SingleValueDropDownController _cnt;
 
+  List<DropDownValueModel> dropdownList = [];
+
+  initList() async {
+    List<String> transactionTypes = await getTransactionTypes("TestId");
+    setState(() {
+      dropdownList = List.generate(
+          transactionTypes.length,
+          (index) => DropDownValueModel(
+              name: transactionTypes[index], value: transactionTypes[index]));
+    });
+  }
+
   @override
   void initState() {
     _cnt = SingleValueDropDownController();
     super.initState();
+    initList();
   }
 
   @override
@@ -40,32 +55,16 @@ class _testDropDownState extends State<testDropDown> {
           }
         },
         dropDownItemCount: 6,
-        dropDownList: const [
-          DropDownValueModel(name: 'name1', value: "value1"),
-          DropDownValueModel(
-              name: 'name2',
-              value: "value2",
-              toolTipMsg:
-                  "DropDownButton is a widget that we can use to select one unique value from a set of values"),
-          DropDownValueModel(name: 'name3', value: "value3"),
-          DropDownValueModel(
-              name: 'name4',
-              value: "value4",
-              toolTipMsg:
-                  "DropDownButton is a widget that we can use to select one unique value from a set of values"),
-          DropDownValueModel(name: 'name5', value: "value5"),
-          DropDownValueModel(name: 'name6', value: "value6"),
-          DropDownValueModel(name: 'name7', value: "value7"),
-          DropDownValueModel(name: 'name8', value: "value8"),
-        ],
+        dropDownList: dropdownList,
         onChanged: (val) {},
       ),
     );
   }
 }
 
-Future<void> inputFormDialog(BuildContext context, String formtitle,
-    Color color, bool isRevenue, List<String> transactionTypes) async {
+Future<void> inputFormDialog(
+    BuildContext context, String formtitle, Color color, bool isRevenue,
+    {AppTransaction? transaction}) async {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   TextEditingController titleController = TextEditingController();
@@ -73,6 +72,13 @@ Future<void> inputFormDialog(BuildContext context, String formtitle,
       TextEditingController(text: DateTime.now().toString());
   TextEditingController valueController = TextEditingController();
   String transactionType = "test";
+
+  if (transaction != null) {
+    titleController.text = transaction.title;
+    dateController.text = transaction.date.toString();
+    valueController.text = transaction.value.toString();
+    transactionType = transaction.type;
+  }
 
   showGeneralDialog(
       barrierLabel: "",
@@ -141,47 +147,6 @@ Future<void> inputFormDialog(BuildContext context, String formtitle,
                     ),
                     // FAIRE UNE SUGGESTION SELON LE TITRE COMME POUR LES PHOTOS
                     const testDropDown(),
-                    // Padding(
-                    //   padding: const EdgeInsets.all(8.0),
-                    //   child: DropdownSearch<String>(
-                    //     asyncItems: (value) => getTransactionTypes("TestId"),
-                    //     compareFn: (i, s) => i.compareTo(s) == 0,
-                    //     onChanged: (value) => transactionType = value!,
-                    //     validator: (value) {
-                    //       if (value == null) {
-                    //         return "Type requis";
-                    //       } else {
-                    //         return null;
-                    //       }
-                    //     },
-                    //     dropdownDecoratorProps: DropDownDecoratorProps(
-                    //         dropdownSearchDecoration: InputDecoration(
-                    //             hintText: "Type",
-                    //             border: OutlineInputBorder(
-                    //                 borderRadius: BorderRadius.circular(20)))),
-                    //     popupProps: PopupProps.menu(
-                    //       menuProps: MenuProps(
-                    //           borderRadius: BorderRadius.circular(20)),
-                    //       itemBuilder: (context, item, isSelected) {
-                    //         return Center(
-                    //           child: Padding(
-                    //             padding: const EdgeInsets.all(12.0),
-                    //             child: Text(
-                    //               item,
-                    //               style: const TextStyle(fontSize: 15),
-                    //             ),
-                    //           ),
-                    //         );
-                    //       },
-                    //       emptyBuilder: (context, searchEntry) {
-                    //         return const Padding(
-                    //           padding: EdgeInsets.all(8.0),
-                    //           child: Text("Pas de resultat"),
-                    //         );
-                    //       },
-                    //     ),
-                    //   ),
-                    // ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: DateTimePicker(

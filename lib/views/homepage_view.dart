@@ -23,12 +23,14 @@ class HomepageView extends StatefulWidget {
 
 class _HomepageViewState extends State<HomepageView> {
   List<String> monthsCalendarList = ["void"];
+  String selectedMonth = "Novembre";
 
   Future<void> initMonthsCalendarList() async {
     List<AppTransaction> value = await getAppTransactions("TestId");
     setState(() {
       monthsCalendarList =
           getMonthsCalendarTransactions(value).reversed.toList();
+      selectedMonth = monthsCalendarList.first;
     });
   }
 
@@ -67,7 +69,7 @@ class _HomepageViewState extends State<HomepageView> {
             //   ),
             // ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
               child: StaggeredGrid.count(
                 crossAxisCount: 4,
                 mainAxisSpacing: 10,
@@ -78,6 +80,7 @@ class _HomepageViewState extends State<HomepageView> {
                     mainAxisCellCount: 1,
                     child: InformationsWidget(
                         child: AwesomeDropDown(
+                      selectedItem: selectedMonth,
                       dropDownList: monthsCalendarList,
                       dropDownBGColor: Colors.transparent,
                       elevation: 0,
@@ -93,10 +96,13 @@ class _HomepageViewState extends State<HomepageView> {
                           fontSize: MediaQuery.of(context).size.width * 0.075),
                     )),
                   ),
-                  const StaggeredGridTile.count(
+                  StaggeredGridTile.count(
                     crossAxisCellCount: 3,
                     mainAxisCellCount: 3,
-                    child: InformationsWidget(child: TransactionPieChart()),
+                    child: InformationsWidget(
+                        child: TransactionPieChart(
+                      selectedMonth: selectedMonth.split(" ")[0],
+                    )),
                   ),
                   StaggeredGridTile.count(
                     crossAxisCellCount: 1,
@@ -185,10 +191,11 @@ class _HomepageViewState extends State<HomepageView> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child:
-                  Divider(thickness: 3, color: Colors.black.withOpacity(0.3)),
+            Divider(
+              thickness: 3,
+              color: Colors.black.withOpacity(0.25),
+              endIndent: 8,
+              indent: 8,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
