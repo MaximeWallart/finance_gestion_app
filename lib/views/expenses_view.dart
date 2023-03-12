@@ -1,4 +1,5 @@
 import 'package:finance_gestion_app/models/app_transaction.dart';
+import 'package:finance_gestion_app/style/app_colors.dart';
 import 'package:finance_gestion_app/utils/data_getters.dart';
 import 'package:finance_gestion_app/utils/data_changer.dart';
 import 'package:finance_gestion_app/utils/firestore_getters.dart';
@@ -30,8 +31,10 @@ class _ExpensesViewState extends State<ExpensesView> {
   }
 
   void loadAppTransactionsList() async {
-    appTransactionsList = await getAppTransactions("TestId")
-        .then((value) => value.reversed.toList());
+    appTransactionsList = await getAppTransactions("TestId").then((value) {
+      value.sort(((a, b) => b.date.compareTo(a.date)));
+      return value;
+    });
     setState(() {});
   }
 
@@ -56,10 +59,17 @@ class _ExpensesViewState extends State<ExpensesView> {
           return Column(
             children: [
               monthInfo
-                  ? Text(
-                      previousMonth,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 25),
+                  ? Container(
+                      alignment: Alignment.centerLeft,
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 5, horizontal: 15),
+                      child: Text(
+                        previousMonth,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textLightBlack),
+                      ),
                     )
                   : Container(),
               TransactionWidget(

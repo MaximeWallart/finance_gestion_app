@@ -16,6 +16,12 @@ void deleteTransaction(AppTransaction transaction) {
       onError: (e) => print("Error updating document $e"));
 }
 
+void modifyTransaction(
+    AppTransaction oldTransaction, AppTransaction newTransaction) {
+  deleteTransaction(oldTransaction);
+  addTransaction(newTransaction);
+}
+
 void addTransactionType(TransactionType transactionType) {
   FirebaseFirestore.instance.collection("Users").doc("TestId").update({
     "Types": FieldValue.arrayUnion([transactionType.name])
@@ -28,4 +34,10 @@ void deleteTransactionType(String transactionType) {
     "Types": FieldValue.arrayRemove([transactionType])
   }).then((value) => print("DocumentSnapshot successfully updated!"),
       onError: (e) => print("Error updating document $e"));
+}
+
+void modifyTransactionType(
+    String oldTransactionType, TransactionType newTransactionType) {
+  deleteTransactionType(oldTransactionType);
+  addTransactionType(newTransactionType);
 }

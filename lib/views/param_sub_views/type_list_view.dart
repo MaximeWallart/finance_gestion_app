@@ -77,7 +77,11 @@ class _TypeListViewState extends State<TypeListView> {
                     label: 'Supprimer',
                   ),
                   SlidableAction(
-                    onPressed: (context) {},
+                    onPressed: (context) {
+                      formPopUp(context, refresh,
+                          oldName: snapshot.data![index]);
+                      setState(() {});
+                    },
                     backgroundColor: Colors.orange,
                     foregroundColor: Colors.white,
                     icon: Icons.mode,
@@ -109,10 +113,11 @@ class _TypeListViewState extends State<TypeListView> {
   }
 }
 
-Future<void> formPopUp(BuildContext context, Function() setState) async {
+Future<void> formPopUp(BuildContext context, Function() setState,
+    {String? oldName}) async {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  TextEditingController nameController = TextEditingController();
+  TextEditingController nameController = TextEditingController(text: oldName);
 
   showGeneralDialog(
       barrierLabel: "",
@@ -168,7 +173,13 @@ Future<void> formPopUp(BuildContext context, Function() setState) async {
                     if (formKey.currentState!.validate()) {
                       TransactionType transactionType =
                           TransactionType(name: nameController.text);
-                      addTransactionType(transactionType);
+                      if (oldName == null) {
+                        addTransactionType(transactionType);
+                      } else {
+                        updateTransactionsByTransactionType(
+                            oldName, transactionType.name);
+                        modifyTransactionType(oldName, transactionType);
+                      }
                       Navigator.pop(context);
                     }
                   },

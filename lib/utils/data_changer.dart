@@ -36,7 +36,17 @@ String formatNumber(int number) {
   return result;
 }
 
-extension changeString on DateTime {
+extension CleanString on double {
+  String removeExtraZeros() {
+    if (toInt() == this) {
+      return "${toInt()}";
+    } else {
+      return toString();
+    }
+  }
+}
+
+extension ChangeString on DateTime {
   String toStringWithWords() {
     if (DateTime.now()
             .difference(subtract(
@@ -172,6 +182,5 @@ List<String> getMonthsCalendarTransactions(List<AppTransaction> transaction) {
       result.add(tmp);
     }
   }
-  print(result);
   return result;
 }

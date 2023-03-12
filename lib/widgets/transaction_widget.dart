@@ -81,7 +81,8 @@ class _TransactionWidgetState extends State<TransactionWidget> {
                         ? AppColors.earning
                         : AppColors.payment,
                     widget.transaction.isRevenue,
-                    transaction: widget.transaction);
+                    transaction: widget.transaction,
+                    updateParents: widget.notifyParent);
               },
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,

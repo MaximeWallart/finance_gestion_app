@@ -177,7 +177,7 @@ class _HomepageViewState extends State<HomepageView> {
                       child: InformationsWidget(
                         backgroundColor: AppColors.available,
                         child: InformationTextWidget(
-                            number: "$balance €", subtext: "Disponible"),
+                            number: "$balance €", subtext: "Disponible"), 
                       )),
                   StaggeredGridTile.count(
                       crossAxisCellCount: 2,

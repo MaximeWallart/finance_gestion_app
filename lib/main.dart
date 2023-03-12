@@ -1,6 +1,4 @@
 import 'package:finance_gestion_app/style/app_colors.dart';
-import 'package:finance_gestion_app/utils/data_changer.dart';
-import 'package:finance_gestion_app/utils/firestore_getters.dart';
 import 'package:finance_gestion_app/utils/firestore_setters.dart';
 import 'package:finance_gestion_app/views/expenses_view.dart';
 import 'package:finance_gestion_app/views/homepage_view.dart';
@@ -70,16 +68,16 @@ class _NavigationState extends State<Navigation> {
             label: 'Transactions',
           ),
           NavigationDestination(
-            selectedIcon: Icon(Icons.person),
-            icon: Icon(Icons.person_outlined),
-            label: 'Personalisation',
+            selectedIcon: Icon(Icons.settings),
+            icon: Icon(Icons.settings_outlined),
+            label: 'Paramètres',
           ),
         ],
       ),
       body: <Widget>[
         HomepageView(user: widget.user),
         const ExpensesView(),
-        const ParametersView(),
+        ParametersView(user: widget.user),
       ][currentPageIndex],
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add_card_outlined),
@@ -90,8 +88,6 @@ class _NavigationState extends State<Navigation> {
               title: "title",
               type: "type",
               isRevenue: false));
-          // await getAppTransactions("TestId")
-          //     .then((value) => getMonthsCalendarTransactions(value));
         },
       ),
     );

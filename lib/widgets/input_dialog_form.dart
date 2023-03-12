@@ -1,5 +1,6 @@
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
+import 'package:finance_gestion_app/utils/data_changer.dart';
 import 'package:finance_gestion_app/models/app_transaction.dart';
 import 'package:finance_gestion_app/utils/firestore_setters.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,10 @@ import 'package:flutter/material.dart';
 import '../utils/firestore_getters.dart';
 
 class testDropDown extends StatefulWidget {
-  const testDropDown({super.key});
+  const testDropDown({super.key, required this.update, this.type});
+
+  final Function(String) update;
+  final String? type;
 
   @override
   State<testDropDown> createState() => _testDropDownState();
@@ -30,7 +34,8 @@ class _testDropDownState extends State<testDropDown> {
 
   @override
   void initState() {
-    _cnt = SingleValueDropDownController();
+    _cnt = SingleValueDropDownController(
+        data: DropDownValueModel(name: widget.type ?? "", value: widget.type));
     super.initState();
     initList();
   }
@@ -56,7 +61,10 @@ class _testDropDownState extends State<testDropDown> {
         },
         dropDownItemCount: 6,
         dropDownList: dropdownList,
-        onChanged: (val) {},
+        onChanged: (val) {
+          DropDownValueModel value = val as DropDownValueModel;
+          widget.update(value.name);
+        },
       ),
     );
   }
@@ -64,7 +72,7 @@ class _testDropDownState extends State<testDropDown> {
 
 Future<void> inputFormDialog(
     BuildContext context, String formtitle, Color color, bool isRevenue,
-    {AppTransaction? transaction}) async {
+    {AppTransaction? transaction, Function()? updateParents}) async {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   TextEditingController titleController = TextEditingController();
@@ -76,8 +84,12 @@ Future<void> inputFormDialog(
   if (transaction != null) {
     titleController.text = transaction.title;
     dateController.text = transaction.date.toString();
-    valueController.text = transaction.value.toString();
+    valueController.text = transaction.value.removeExtraZeros();
     transactionType = transaction.type;
+  }
+
+  void updateTransactionType(String newType) {
+    transactionType = newType;
   }
 
   showGeneralDialog(
@@ -117,6 +129,7 @@ Future<void> inputFormDialog(
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20))),
                         controller: titleController,
+                        textCapitalization: TextCapitalization.words,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Le titre doit être renseigné';
@@ -146,7 +159,8 @@ Future<void> inputFormDialog(
                       ),
                     ),
                     // FAIRE UNE SUGGESTION SELON LE TITRE COMME POUR LES PHOTOS
-                    const testDropDown(),
+                    testDropDown(
+                        update: updateTransactionType, type: transaction?.type),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: DateTimePicker(
@@ -169,15 +183,20 @@ Future<void> inputFormDialog(
             ),
             actions: [
               ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (formKey.currentState!.validate()) {
-                      AppTransaction transaction = AppTransaction(
+                      AppTransaction newTransaction = AppTransaction(
                           date: DateTime.parse(dateController.text),
                           value: double.parse(valueController.text),
                           title: titleController.text,
                           type: transactionType,
                           isRevenue: isRevenue);
-                      addTransaction(transaction);
+                      if (transaction == null) {
+                        addTransaction(newTransaction);
+                      } else {
+                        modifyTransaction(transaction, newTransaction);
+                        updateParents!();
+                      }
                       Navigator.pop(context);
                     }
                   },
