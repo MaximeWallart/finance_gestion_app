@@ -1,5 +1,6 @@
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
+import 'package:finance_gestion_app/models/global.dart' as global;
 import 'package:finance_gestion_app/utils/data_changer.dart';
 import 'package:finance_gestion_app/models/app_transaction.dart';
 import 'package:finance_gestion_app/utils/firestore_setters.dart';
@@ -23,7 +24,7 @@ class _testDropDownState extends State<testDropDown> {
   List<DropDownValueModel> dropdownList = [];
 
   initList() async {
-    List<String> transactionTypes = await getTransactionTypes("TestId");
+    List<String> transactionTypes = await getTransactionTypes(global.docId);
     setState(() {
       dropdownList = List.generate(
           transactionTypes.length,
@@ -187,7 +188,8 @@ Future<void> inputFormDialog(
                     if (formKey.currentState!.validate()) {
                       AppTransaction newTransaction = AppTransaction(
                           date: DateTime.parse(dateController.text),
-                          value: double.parse(valueController.text),
+                          value: double.parse(
+                              valueController.text.replaceAll(",", ".")),
                           title: titleController.text,
                           type: transactionType,
                           isRevenue: isRevenue);

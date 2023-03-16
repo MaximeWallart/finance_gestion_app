@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:finance_gestion_app/models/global.dart' as global;
 
 class Authentication {
   static Future<FirebaseApp> initializeFirebase({
@@ -14,6 +15,7 @@ class Authentication {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
+      global.docId = "TestId";
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => Navigation(user: user)),
       );

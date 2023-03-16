@@ -65,39 +65,55 @@ class TransactionPieChart extends StatefulWidget {
   final String selectedMonth;
 
   @override
-  State<TransactionPieChart> createState() => _TransactionPieChartState();
+  State<TransactionPieChart> createState() => TransactionPieChartState();
 }
 
-class _TransactionPieChartState extends State<TransactionPieChart> {
+class TransactionPieChartState extends State<TransactionPieChart> {
   List<PieChartSectionData> pieChartSectionDataList = [
     PieChartSectionData(
         title: "test", value: 100, color: AppColors.listCharColors[0])
   ];
   List<AppTransaction> transactionsMonth = [];
-
   int touchedIndex = 0;
 
   Future<void> initTransaction() async {
-    transactionsMonth = await getTransactionFromMonth(getMonthInt(widget.selectedMonth));
+    transactionsMonth =
+        await getTransactionFromMonth(getMonthInt(widget.selectedMonth));
+  }
+
+  Future<void> setSelectedMonth(String selectedMonth) async {
+    transactionsMonth =
+        await getTransactionFromMonth(getMonthInt(selectedMonth));
+    initPieChartDataList();
+    selectedValue = pieChartSectionDataList[0].title;
+    percentageSelected =
+        "${pieChartSectionDataList[0].value.toStringAsFixed(1)}%";
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> initPieChartDataList() async {
-    setState(() {
-      pieChartSectionDataList.clear();
-    });
+    if (mounted) {
+      setState(() {
+        pieChartSectionDataList.clear();
+      });
+    }
     int i = 0;
     getPieChartData(transactionsMonth).forEach((key, value) {
       bool isTouched = i == touchedIndex;
       final radius = isTouched ? 40.0 : 30.0;
-      setState(() {
-        pieChartSectionDataList.add(PieChartSectionData(
-            title: key,
-            value: value,
-            radius: radius,
-            showTitle: false,
-            color: AppColors.listCharColors[i]));
-        i++;
-      });
+      if (mounted) {
+        setState(() {
+          pieChartSectionDataList.add(PieChartSectionData(
+              title: key,
+              value: value,
+              radius: radius,
+              showTitle: false,
+              color: AppColors.listCharColors[i]));
+          i++;
+        });
+      }
     });
   }
 
@@ -106,7 +122,8 @@ class _TransactionPieChartState extends State<TransactionPieChart> {
     initTransaction().then((value) {
       initPieChartDataList();
       selectedValue = pieChartSectionDataList[0].title;
-      percentageSelected = "${pieChartSectionDataList[0].value}%";
+      percentageSelected =
+          "${pieChartSectionDataList[0].value.toStringAsFixed(1)}%";
     });
     super.initState();
   }
@@ -149,7 +166,7 @@ class _TransactionPieChartState extends State<TransactionPieChart> {
                       selectedValue = pieTouchResponse
                           .touchedSection!.touchedSection!.title;
                       percentageSelected =
-                          "${pieTouchResponse.touchedSection!.touchedSection!.value}%";
+                          "${pieTouchResponse.touchedSection!.touchedSection!.value.toStringAsFixed(1)}%";
                     }
                   });
                 },

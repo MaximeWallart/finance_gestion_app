@@ -3,6 +3,7 @@ import 'package:finance_gestion_app/style/app_colors.dart';
 import 'package:finance_gestion_app/utils/data_getters.dart';
 import 'package:finance_gestion_app/utils/data_changer.dart';
 import 'package:finance_gestion_app/utils/firestore_getters.dart';
+import 'package:finance_gestion_app/models/global.dart' as global;
 import 'package:flutter/material.dart';
 
 import '../widgets/transaction_widget.dart';
@@ -31,11 +32,13 @@ class _ExpensesViewState extends State<ExpensesView> {
   }
 
   void loadAppTransactionsList() async {
-    appTransactionsList = await getAppTransactions("TestId").then((value) {
+    appTransactionsList = await getAppTransactions(global.docId).then((value) {
       value.sort(((a, b) => b.date.compareTo(a.date)));
       return value;
     });
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   refresh() {
@@ -80,9 +83,5 @@ class _ExpensesViewState extends State<ExpensesView> {
             ],
           );
         }));
-    // return GetTransactions(
-    //   documentId: "TestId",
-    //   assetsList: assetsList,
-    // );
   }
 }

@@ -1,10 +1,9 @@
-import 'package:finance_gestion_app/models/transaction_type.dart';
-
 class Genre {
   String name;
-  List<TransactionType> types;
+  bool forRevenue;
+  List<String> types;
 
-  Genre({required this.name, this.types = const []});
+  Genre({required this.name, required this.forRevenue, this.types = const []});
 
   @override
   String toString() => "Genre<$name>";
@@ -12,8 +11,9 @@ class Genre {
   Genre.fromJson(Map<String, Object> json)
       : this(
             name: json['name'] as String,
-            types: json['types'] as List<TransactionType>);
+            forRevenue: json['forRevenue'] as bool,
+            types: json['types'] as List<String>);
 
   Map<String, Object> toJson() =>
-      <String, Object>{'name:': name, 'types': types};
+      <String, Object>{'name': name, 'forRevenue': forRevenue, 'types': types};
 }

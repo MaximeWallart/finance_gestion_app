@@ -1,3 +1,4 @@
+import 'package:finance_gestion_app/models/genre.dart';
 import 'package:finance_gestion_app/style/app_colors.dart';
 import 'package:finance_gestion_app/utils/firestore_setters.dart';
 import 'package:finance_gestion_app/views/expenses_view.dart';
@@ -7,8 +8,6 @@ import 'package:finance_gestion_app/views/signin_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
-import 'models/app_transaction.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -82,12 +81,20 @@ class _NavigationState extends State<Navigation> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add_card_outlined),
         onPressed: () async {
-          addTransaction(AppTransaction(
-              date: DateTime.now(),
-              value: 20,
-              title: "title",
-              type: "type",
-              isRevenue: false));
+          // final snackBar = SnackBar(
+          //     content: Text("|${global.selectedMonth.split(" ")[0]}|"));
+          // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          // addTransaction(AppTransaction(
+          //     date: DateTime.now(),
+          //     value: 20,
+          //     title: "title",
+          //     type: "type",
+          //     isRevenue: false));$
+          addGenre(Genre(
+              forRevenue: true,
+              name: "Courses",
+              types: ["Alimentation", "Pharmacie"]));
+          setState(() {});
         },
       ),
     );

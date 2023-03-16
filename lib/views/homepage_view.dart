@@ -1,6 +1,7 @@
 import 'package:finance_gestion_app/models/app_transaction.dart';
 import 'package:finance_gestion_app/style/app_colors.dart';
 import 'package:finance_gestion_app/utils/data_changer.dart';
+import 'package:finance_gestion_app/utils/data_getters.dart';
 import 'package:finance_gestion_app/utils/firestore_getters.dart';
 import 'package:finance_gestion_app/widgets/expense_dialog_form.dart';
 import 'package:finance_gestion_app/widgets/informations_widget.dart';
@@ -9,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
+import 'package:finance_gestion_app/models/global.dart' as global;
 
 import '../modified/awesome_dropdown.dart';
 
@@ -22,22 +24,32 @@ class HomepageView extends StatefulWidget {
 }
 
 class _HomepageViewState extends State<HomepageView> {
+  final GlobalKey<TransactionPieChartState> _key = GlobalKey();
   List<String> monthsCalendarList = ["void"];
-  String selectedMonth = "Novembre";
 
   Future<void> initMonthsCalendarList() async {
-    List<AppTransaction> value = await getAppTransactions("TestId");
-    setState(() {
-      monthsCalendarList =
-          getMonthsCalendarTransactions(value).reversed.toList();
-      selectedMonth = monthsCalendarList.first;
-    });
+    List<AppTransaction> value = await getAppTransactions(global.docId);
+    if (mounted) {
+      setState(() {
+        monthsCalendarList =
+            getMonthsCalendarTransactions(value).reversed.toList();
+        if (global.selectedMonth == "" ||
+            !monthsCalendarList.contains(global.selectedMonth)) {
+          global.selectedMonth = monthsCalendarList.first;
+        }
+      });
+    }
   }
 
-  int balance = 0;
+  Future<bool> canDoPieChart() async {
+    await initMonthsCalendarList();
+    var transactions =
+        await getTransactionFromMonth(getMonthInt(global.selectedMonth));
+    return transactions.isNotEmpty;
+  }
 
   Future<void> initBalance() async {
-    balance = await getBalance("TestId");
+    global.account.balance = await getBalance(global.docId);
     setState(() {});
   }
 
@@ -54,20 +66,6 @@ class _HomepageViewState extends State<HomepageView> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            // Center(
-            //   child: Padding(
-            //     padding: EdgeInsets.symmetric(
-            //         horizontal: 8,
-            //         vertical: MediaQuery.of(context).size.width * 0.2),
-            //     child: Column(
-            //       children: [
-            //         CircleAvatar(
-            //             backgroundImage: NetworkImage(widget.user.photoURL!)),
-            //         Text("Bonjour ${widget.user.displayName!} !")
-            //       ],
-            //     ),
-            //   ),
-            // ),
             Padding(
               padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
               child: StaggeredGrid.count(
@@ -80,7 +78,14 @@ class _HomepageViewState extends State<HomepageView> {
                     mainAxisCellCount: 1,
                     child: InformationsWidget(
                         child: AwesomeDropDown(
-                      selectedItem: selectedMonth,
+                      onDropDownItemClick: (element) {
+                        setState(() {
+                          global.selectedMonth = element;
+                          _key.currentState!
+                              .setSelectedMonth(element.split(" ")[0]);
+                        });
+                      },
+                      selectedItem: global.selectedMonth,
                       dropDownList: monthsCalendarList,
                       dropDownBGColor: Colors.transparent,
                       elevation: 0,
@@ -97,13 +102,26 @@ class _HomepageViewState extends State<HomepageView> {
                     )),
                   ),
                   StaggeredGridTile.count(
-                    crossAxisCellCount: 3,
-                    mainAxisCellCount: 3,
-                    child: InformationsWidget(
-                        child: TransactionPieChart(
-                      selectedMonth: selectedMonth.split(" ")[0],
-                    )),
-                  ),
+                      crossAxisCellCount: 3,
+                      mainAxisCellCount: 3,
+                      child: InformationsWidget(
+                        child: FutureBuilder(
+                            future: getTransactionFromMonth(
+                                getMonthInt(global.selectedMonth)),
+                            builder: (context, snapshot) {
+                              if (global.selectedMonth != "" &&
+                                  snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                return TransactionPieChart(
+                                  key: _key,
+                                  selectedMonth:
+                                      global.selectedMonth.split(" ")[0],
+                                );
+                              } else {
+                                return const CircularProgressIndicator();
+                              }
+                            }),
+                      )),
                   StaggeredGridTile.count(
                     crossAxisCellCount: 1,
                     mainAxisCellCount: 1,
@@ -177,7 +195,8 @@ class _HomepageViewState extends State<HomepageView> {
                       child: InformationsWidget(
                         backgroundColor: AppColors.available,
                         child: InformationTextWidget(
-                            number: "$balance €", subtext: "Disponible"), 
+                            number: "${global.account.balance.floor()} €",
+                            subtext: "Disponible"),
                       )),
                   StaggeredGridTile.count(
                       crossAxisCellCount: 2,

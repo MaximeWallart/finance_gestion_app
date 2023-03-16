@@ -1,24 +1,47 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_gestion_app/models/app_transaction.dart';
+import 'package:finance_gestion_app/models/genre.dart';
 import 'package:finance_gestion_app/widgets/transaction_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:finance_gestion_app/models/global.dart' as global;
 
-Future<int> getBalance(String docId) async {
-  int result = 0;
-  var doc = FirebaseFirestore.instance.collection('Users').doc(docId);
+Future<double> getBalance(String docId) async {
+  double result = 0;
+  var doc =
+      FirebaseFirestore.instance.collection(global.collectionName).doc(docId);
   DocumentSnapshot documentSnapshot = await doc.get();
   if (documentSnapshot.exists) {
     Map<String, dynamic> optionsDoc =
         documentSnapshot.data() as Map<String, dynamic>;
-    result = int.parse(optionsDoc['Balance'].toString());
+    result = double.parse(optionsDoc['Balance'].toString());
   }
   return result;
+}
+
+Future<List<Genre>> getGenres(String docId, bool forRevenue) async {
+  List<Genre> genres = [];
+  var doc =
+      FirebaseFirestore.instance.collection(global.collectionName).doc(docId);
+  DocumentSnapshot documentSnapshot = await doc.get();
+  if (documentSnapshot.exists) {
+    Map<String, dynamic> optionsDoc =
+        documentSnapshot.data() as Map<String, dynamic>;
+    List fetchedGenres = optionsDoc['Genres'];
+    for (var element in fetchedGenres) {
+      Genre genre = Genre.fromJson(element);
+      if (genre.forRevenue == forRevenue) {
+        genres.add(genre);
+      }
+    }
+  }
+  return genres;
 }
 
 Future<List<String>> getTransactionTypes(String docId,
     [String withoutThisOne = ""]) async {
   List<String> types = [];
-  var doc = FirebaseFirestore.instance.collection('Users').doc(docId);
+  var doc =
+      FirebaseFirestore.instance.collection(global.collectionName).doc(docId);
   DocumentSnapshot documentSnapshot = await doc.get();
   if (documentSnapshot.exists) {
     Map<String, dynamic> optionsDoc =
@@ -35,7 +58,8 @@ Future<List<String>> getTransactionTypes(String docId,
 Future<List<AppTransaction>> getAppTransactions(String docId,
     [String transactionType = ""]) async {
   List<AppTransaction> transactions = [];
-  var doc = FirebaseFirestore.instance.collection('Users').doc(docId);
+  var doc =
+      FirebaseFirestore.instance.collection(global.collectionName).doc(docId);
   DocumentSnapshot documentSnapshot = await doc.get();
   if (documentSnapshot.exists) {
     Map<String, dynamic> optionsDoc =
@@ -69,7 +93,8 @@ class GetTransactions extends StatefulWidget {
 class _GetTransactionsState extends State<GetTransactions> {
   @override
   Widget build(BuildContext context) {
-    CollectionReference users = FirebaseFirestore.instance.collection('Users');
+    CollectionReference users =
+        FirebaseFirestore.instance.collection(global.collectionName);
 
     return FutureBuilder<DocumentSnapshot>(
       future: users.doc(widget.documentId).get(),

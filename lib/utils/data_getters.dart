@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:finance_gestion_app/models/app_transaction.dart';
 import 'package:finance_gestion_app/utils/firestore_getters.dart';
 import 'package:flutter/services.dart';
+import 'package:finance_gestion_app/models/global.dart' as global;
 
 Future<List<String>> loadAssetsList() async {
   // >> To get paths you need these 2 lines
@@ -19,14 +20,14 @@ Future<List<String>> loadAssetsList() async {
 }
 
 Future<List<AppTransaction>> getTransactionFromMonth(int month) async {
-  List<AppTransaction> transactions = await getAppTransactions("TestId");
+  List<AppTransaction> transactions = await getAppTransactions(global.docId);
   transactions.removeWhere((element) => element.date.month != month);
   return transactions;
 }
 
 Future<bool> anyTransactionsUseTransactionType(String transactionType) async {
   List<AppTransaction> transactions =
-      await getAppTransactions("TestId", transactionType);
+      await getAppTransactions(global.docId, transactionType);
   if (transactions.isNotEmpty) {
     return true;
   }

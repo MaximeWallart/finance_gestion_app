@@ -1,8 +1,10 @@
 import 'package:finance_gestion_app/utils/firestore_getters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:finance_gestion_app/models/global.dart' as global;
 
 import '../../models/transaction_type.dart';
+import '../../style/app_colors.dart';
 import '../../utils/data_getters.dart';
 import '../../utils/data_setters.dart';
 import '../../utils/firestore_setters.dart';
@@ -18,7 +20,7 @@ class _TypeListViewState extends State<TypeListView> {
   List<String> typesList = [];
 
   Future<void> initList() async {
-    typesList = await getTransactionTypes("TestId");
+    typesList = await getTransactionTypes(global.docId);
   }
 
   @override
@@ -34,81 +36,118 @@ class _TypeListViewState extends State<TypeListView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: FutureBuilder<List<String>>(
-      future: getTransactionTypes("TestId"),
-      initialData: const ["Loading"],
-      builder: (context, snapshot) {
-        int itemCount = snapshot.data?.length ?? 0;
-        return ListView.builder(
-          itemCount: itemCount + 1,
-          itemBuilder: (context, index) {
-            if (index == itemCount) {
-              return ListTile(
-                  onTap: () {
-                    formPopUp(context, refresh);
-                    setState(() {});
-                  },
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  tileColor: Colors.white,
-                  title: Icon(
-                    Icons.add,
-                    color: Colors.black.withOpacity(0.33),
-                    size: 20,
-                  ));
-            } else {
-              return Slidable(
-                startActionPane:
-                    ActionPane(motion: const ScrollMotion(), children: [
-                  SlidableAction(
-                    onPressed: (context) async {
-                      bool verif = await anyTransactionsUseTransactionType(
-                          snapshot.data![index]);
-                      if (verif == false) {
-                        deleteTransactionType(snapshot.data![index]);
+        body: SafeArea(
+      child: SingleChildScrollView(
+        physics: const ScrollPhysics(),
+        child: Column(
+          children: [
+            Container(
+                padding: const EdgeInsets.all(8),
+                color: AppColors.payment.withOpacity(0.5),
+                width: double.infinity,
+                child: const Center(
+                  child: Text(
+                    "Types Dépenses",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                )),
+            Container(
+              color: AppColors.payment.withOpacity(0.2),
+              child: FutureBuilder<List<String>>(
+                future: getTransactionTypes(global.docId),
+                initialData: const ["Loading"],
+                builder: (context, snapshot) {
+                  int itemCount = snapshot.data?.length ?? 0;
+                  return ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: itemCount + 1,
+                    itemBuilder: (context, index) {
+                      if (index == itemCount) {
+                        return ListTile(
+                            onTap: () {
+                              formPopUp(context, refresh);
+                              setState(() {});
+                            },
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            tileColor: Colors.white,
+                            title: Icon(
+                              Icons.add,
+                              color: Colors.black.withOpacity(0.5),
+                              size: 20,
+                            ));
                       } else {
-                        askReplacementPopUp(
-                            context, refresh, snapshot.data![index]);
+                        return Slidable(
+                          startActionPane: ActionPane(
+                              motion: const ScrollMotion(),
+                              children: [
+                                SlidableAction(
+                                  onPressed: (context) async {
+                                    bool verif =
+                                        await anyTransactionsUseTransactionType(
+                                            snapshot.data![index]);
+                                    if (verif == false) {
+                                      deleteTransactionType(
+                                          snapshot.data![index]);
+                                    } else {
+                                      askReplacementPopUp(context, refresh,
+                                          snapshot.data![index]);
+                                    }
+                                  },
+                                  backgroundColor: const Color(0xFFFE4A49),
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.delete,
+                                  label: 'Supprimer',
+                                ),
+                                SlidableAction(
+                                  onPressed: (context) {
+                                    formPopUp(context, refresh,
+                                        oldName: snapshot.data![index]);
+                                    setState(() {});
+                                  },
+                                  backgroundColor: Colors.orange,
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.mode,
+                                  label: 'Modifier',
+                                ),
+                              ]),
+                          child: ListTile(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            tileColor: Colors.white,
+                            title: Center(
+                              child: Text(
+                                snapshot.data![index],
+                                style: TextStyle(
+                                    fontFamily: 'Lato',
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black.withOpacity(0.5),
+                                    fontSize: 15),
+                              ),
+                            ),
+                          ),
+                          // subtitle: Text(widget.transaction.type),
+                        );
                       }
                     },
-                    backgroundColor: const Color(0xFFFE4A49),
-                    foregroundColor: Colors.white,
-                    icon: Icons.delete,
-                    label: 'Supprimer',
+                  );
+                },
+              ),
+            ),
+            Container(
+                padding: const EdgeInsets.all(8),
+                color: AppColors.earning.withOpacity(0.5),
+                width: double.infinity,
+                child: const Center(
+                  child: Text(
+                    "Types Revenus",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  SlidableAction(
-                    onPressed: (context) {
-                      formPopUp(context, refresh,
-                          oldName: snapshot.data![index]);
-                      setState(() {});
-                    },
-                    backgroundColor: Colors.orange,
-                    foregroundColor: Colors.white,
-                    icon: Icons.mode,
-                    label: 'Modifier',
-                  ),
-                ]),
-                child: ListTile(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  tileColor: Colors.white,
-                  title: Center(
-                    child: Text(
-                      snapshot.data![index],
-                      style: TextStyle(
-                          fontFamily: 'Lato',
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black.withOpacity(0.33),
-                          fontSize: 15),
-                    ),
-                  ),
-                ),
-                // subtitle: Text(widget.transaction.type),
-              );
-            }
-          },
-        );
-      },
+                ))
+          ],
+        ),
+      ),
     ));
   }
 }
@@ -197,7 +236,7 @@ Future<void> askReplacementPopUp(
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   List<String> transactionTypes =
-      await getTransactionTypes("TestId", transactionType);
+      await getTransactionTypes(global.docId, transactionType);
   List<DropdownMenuItem> listDropdown = List.generate(
       transactionTypes.length,
       (index) => DropdownMenuItem(
