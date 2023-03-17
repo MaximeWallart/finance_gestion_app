@@ -19,15 +19,29 @@ Future<List<String>> loadAssetsList() async {
   return imagePaths;
 }
 
+List<String> getTransactionTypes(bool forRevenue,
+    [String withoutThisOne = ""]) {
+  List<String> result = [];
+  for (var element in global.genres) {
+    if (element.forRevenue == forRevenue) {
+      result.addAll(element.types);
+    }
+  }
+  if (withoutThisOne != "") {
+    result.remove(withoutThisOne);
+  }
+  return result;
+}
+
 Future<List<AppTransaction>> getTransactionFromMonth(int month) async {
   List<AppTransaction> transactions = await getAppTransactions(global.docId);
   transactions.removeWhere((element) => element.date.month != month);
   return transactions;
 }
 
-Future<bool> anyTransactionsUseTransactionType(String transactionType) async {
+Future<bool> anyTransactionsUseTransactionType(String transactionType, [bool isRevenue = false]) async {
   List<AppTransaction> transactions =
-      await getAppTransactions(global.docId, transactionType);
+      await getAppTransactions(global.docId, transactionType, isRevenue);
   if (transactions.isNotEmpty) {
     return true;
   }

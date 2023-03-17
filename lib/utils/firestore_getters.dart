@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_gestion_app/models/app_transaction.dart';
 import 'package:finance_gestion_app/models/genre.dart';
-import 'package:finance_gestion_app/widgets/transaction_widget.dart';
-import 'package:flutter/material.dart';
 import 'package:finance_gestion_app/models/global.dart' as global;
 
 Future<double> getBalance(String docId) async {
@@ -18,7 +16,7 @@ Future<double> getBalance(String docId) async {
   return result;
 }
 
-Future<List<Genre>> getGenres(String docId, bool forRevenue) async {
+Future<List<Genre>> getGenres(String docId, [bool? forRevenue]) async {
   List<Genre> genres = [];
   var doc =
       FirebaseFirestore.instance.collection(global.collectionName).doc(docId);
@@ -29,7 +27,11 @@ Future<List<Genre>> getGenres(String docId, bool forRevenue) async {
     List fetchedGenres = optionsDoc['Genres'];
     for (var element in fetchedGenres) {
       Genre genre = Genre.fromJson(element);
-      if (genre.forRevenue == forRevenue) {
+      if (forRevenue != null) {
+        if (genre.forRevenue == forRevenue) {
+          genres.add(genre);
+        }
+      } else {
         genres.add(genre);
       }
     }
@@ -37,26 +39,8 @@ Future<List<Genre>> getGenres(String docId, bool forRevenue) async {
   return genres;
 }
 
-Future<List<String>> getTransactionTypes(String docId,
-    [String withoutThisOne = ""]) async {
-  List<String> types = [];
-  var doc =
-      FirebaseFirestore.instance.collection(global.collectionName).doc(docId);
-  DocumentSnapshot documentSnapshot = await doc.get();
-  if (documentSnapshot.exists) {
-    Map<String, dynamic> optionsDoc =
-        documentSnapshot.data() as Map<String, dynamic>;
-    List<dynamic> counterList = optionsDoc['Types'];
-    types = counterList.map((type) => type.toString()).toList();
-  }
-  if (withoutThisOne != "") {
-    types.remove(withoutThisOne);
-  }
-  return types;
-}
-
 Future<List<AppTransaction>> getAppTransactions(String docId,
-    [String transactionType = ""]) async {
+    [String? transactionType, bool? isRevenue]) async {
   List<AppTransaction> transactions = [];
   var doc =
       FirebaseFirestore.instance.collection(global.collectionName).doc(docId);
@@ -67,11 +51,8 @@ Future<List<AppTransaction>> getAppTransactions(String docId,
     List experiences = optionsDoc['Transactions'];
     for (var element in experiences) {
       AppTransaction transaction = AppTransaction.fromJson(element);
-      if (transactionType != "") {
-        if (transaction.type == transactionType) {
-          transactions.add(transaction);
-        }
-      } else {
+      if (isTransactionType(transactionType, transaction.type) &&
+          isItRevenue(isRevenue, transaction.isRevenue)) {
         transactions.add(transaction);
       }
     }
@@ -79,51 +60,24 @@ Future<List<AppTransaction>> getAppTransactions(String docId,
   return transactions;
 }
 
-class GetTransactions extends StatefulWidget {
-  const GetTransactions(
-      {super.key, required this.documentId, required this.assetsList});
-
-  final String documentId;
-  final List<String> assetsList;
-
-  @override
-  State<GetTransactions> createState() => _GetTransactionsState();
+bool isTransactionType(String? type, String transactionType) {
+  if (type != null) {
+    if (type == transactionType) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  return true;
 }
 
-class _GetTransactionsState extends State<GetTransactions> {
-  @override
-  Widget build(BuildContext context) {
-    CollectionReference users =
-        FirebaseFirestore.instance.collection(global.collectionName);
-
-    return FutureBuilder<DocumentSnapshot>(
-      future: users.doc(widget.documentId).get(),
-      builder:
-          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return const Text("Something went wrong");
-        }
-
-        if (snapshot.hasData && !snapshot.data!.exists) {
-          return const Text("Document does not exist");
-        }
-
-        if (snapshot.connectionState == ConnectionState.done) {
-          List experiences = List.from(snapshot.data!.get('Transactions'))
-              .reversed
-              .toList(); // This line should be inside if block
-          return ListView.builder(
-              itemCount: experiences.length,
-              itemBuilder: ((context, index) {
-                return TransactionWidget(
-                  transaction: AppTransaction.fromJson(experiences[index]),
-                  assetsList: widget.assetsList,
-                );
-              })); // You forgot to add 'return' here
-        }
-
-        return const Center(child: Text("loading"));
-      },
-    );
+bool isItRevenue(bool? isRevenue, bool transactionIsRevenue) {
+  if (isRevenue != null) {
+    if (isRevenue == transactionIsRevenue) {
+      return true;
+    } else {
+      return false;
+    }
   }
+  return true;
 }

@@ -1,18 +1,18 @@
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
-import 'package:finance_gestion_app/models/global.dart' as global;
 import 'package:finance_gestion_app/utils/data_changer.dart';
 import 'package:finance_gestion_app/models/app_transaction.dart';
+import 'package:finance_gestion_app/utils/data_getters.dart';
 import 'package:finance_gestion_app/utils/firestore_setters.dart';
 import 'package:flutter/material.dart';
 
-import '../utils/firestore_getters.dart';
-
 class testDropDown extends StatefulWidget {
-  const testDropDown({super.key, required this.update, this.type});
+  const testDropDown(
+      {super.key, required this.update, required this.isRevenue, this.type});
 
   final Function(String) update;
   final String? type;
+  final bool isRevenue;
 
   @override
   State<testDropDown> createState() => _testDropDownState();
@@ -24,7 +24,7 @@ class _testDropDownState extends State<testDropDown> {
   List<DropDownValueModel> dropdownList = [];
 
   initList() async {
-    List<String> transactionTypes = await getTransactionTypes(global.docId);
+    List<String> transactionTypes = getTransactionTypes(widget.isRevenue);
     setState(() {
       dropdownList = List.generate(
           transactionTypes.length,
@@ -161,7 +161,9 @@ Future<void> inputFormDialog(
                     ),
                     // FAIRE UNE SUGGESTION SELON LE TITRE COMME POUR LES PHOTOS
                     testDropDown(
-                        update: updateTransactionType, type: transaction?.type),
+                        update: updateTransactionType,
+                        isRevenue: isRevenue,
+                        type: transaction?.type),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: DateTimePicker(

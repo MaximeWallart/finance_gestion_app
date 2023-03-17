@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_gestion_app/models/app_transaction.dart';
 import 'package:finance_gestion_app/models/genre.dart';
-import 'package:finance_gestion_app/models/transaction_type.dart';
 import 'package:finance_gestion_app/models/global.dart' as global;
 import 'package:finance_gestion_app/utils/firestore_getters.dart';
 
@@ -49,34 +48,21 @@ void addGenre(Genre genre) {
       .doc(global.docId)
       .update({
     "Genres": FieldValue.arrayUnion([genre.toJson()])
-  }).then((value) => print("DocumentSnapshot successfully updated!"),
-          onError: (e) => print("Error updating document $e"));
+  }).then((value) async {
+    print("DocumentSnapshot successfully updated!");
+    global.genres = await getGenres(global.docId);
+  }, onError: (e) => print("Error updating document $e"));
 }
 
-void addTransactionType(TransactionType transactionType) {
+void updateGenres(List<Genre> genres) {
   FirebaseFirestore.instance
       .collection(global.collectionName)
       .doc(global.docId)
-      .update({
-    "Types": FieldValue.arrayUnion([transactionType.name])
-  }).then((value) => print("DocumentSnapshot successfully updated!"),
-          onError: (e) => print("Error updating document $e"));
-}
-
-void deleteTransactionType(String transactionType) {
-  FirebaseFirestore.instance
-      .collection(global.collectionName)
-      .doc(global.docId)
-      .update({
-    "Types": FieldValue.arrayRemove([transactionType])
-  }).then((value) => print("DocumentSnapshot successfully updated!"),
-          onError: (e) => print("Error updating document $e"));
-}
-
-void modifyTransactionType(
-    String oldTransactionType, TransactionType newTransactionType) {
-  deleteTransactionType(oldTransactionType);
-  addTransactionType(newTransactionType);
+      .update({"Genres": genres.map((e) => e.toJson()).toList()}).then(
+          (value) async {
+    print("DocumentSnapshot successfully updated!");
+    global.genres = await getGenres(global.docId);
+  }, onError: (e) => print("Error updating document $e"));
 }
 
 void addToBalance(AppTransaction transaction) {
