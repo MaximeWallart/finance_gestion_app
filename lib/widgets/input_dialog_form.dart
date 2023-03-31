@@ -1,5 +1,6 @@
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
+import 'package:finance_gestion_app/style/app_colors.dart';
 import 'package:finance_gestion_app/utils/data_changer.dart';
 import 'package:finance_gestion_app/models/app_transaction.dart';
 import 'package:finance_gestion_app/utils/data_getters.dart';
@@ -8,11 +9,16 @@ import 'package:flutter/material.dart';
 
 class testDropDown extends StatefulWidget {
   const testDropDown(
-      {super.key, required this.update, required this.isRevenue, this.type});
+      {super.key,
+      required this.update,
+      required this.isRevenue,
+      required this.color,
+      this.type});
 
   final Function(String) update;
   final String? type;
   final bool isRevenue;
+  final Color color;
 
   @override
   State<testDropDown> createState() => _testDropDownState();
@@ -43,16 +49,24 @@ class _testDropDownState extends State<testDropDown> {
 
   @override
   Widget build(BuildContext context) {
+    FocusNode typeFocusNode = FocusNode();
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: DropDownTextField(
         controller: _cnt,
         clearOption: false,
         enableSearch: true,
+        textFieldFocusNode: typeFocusNode,
+        searchFocusNode: typeFocusNode,
         textFieldDecoration: InputDecoration(
-            hintText: "Type",
-            border:
-                OutlineInputBorder(borderRadius: BorderRadius.circular(20))),
+            icon: Icon(
+              Icons.abc,
+              color: typeFocusNode.hasFocus ? widget.color : Colors.black,
+            ),
+            focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: widget.color, width: 1)),
+            hintText: "Type"),
         validator: (value) {
           if (value == null) {
             return "Required field";
@@ -82,6 +96,10 @@ Future<void> inputFormDialog(
   TextEditingController valueController = TextEditingController();
   String transactionType = "test";
 
+  FocusNode titleFocusNode = FocusNode();
+  FocusNode valueFocusNode = FocusNode();
+  FocusNode dateFocusNode = FocusNode();
+
   if (transaction != null) {
     titleController.text = transaction.title;
     dateController.text = transaction.date.toString();
@@ -101,7 +119,7 @@ Future<void> inputFormDialog(
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
             scrollable: true,
-            backgroundColor: color,
+            backgroundColor: AppColors.backgoundColor,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             content: SizedBox(
@@ -111,24 +129,31 @@ Future<void> inputFormDialog(
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
                     Padding(
                       padding: const EdgeInsets.all(12.0),
-                      child: Center(
-                        child: Text(
-                          formtitle,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 35,
-                              fontWeight: FontWeight.bold),
-                        ),
+                      child: Text(
+                        formtitle,
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 35,
+                            letterSpacing: 4,
+                            fontWeight: FontWeight.w400),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
+                        focusNode: titleFocusNode,
+                        autofocus: true,
                         maxLines: 1,
                         decoration: InputDecoration(
-                            hintText: "Titre",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20))),
+                            icon: Icon(
+                              Icons.label_outline_rounded,
+                              color: titleFocusNode.hasFocus
+                                  ? color
+                                  : Colors.black,
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: color, width: 1)),
+                            hintText: "Titre"),
                         controller: titleController,
                         textCapitalization: TextCapitalization.words,
                         validator: (value) {
@@ -143,12 +168,19 @@ Future<void> inputFormDialog(
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
+                        focusNode: valueFocusNode,
                         maxLines: 1,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
-                            hintText: "Valeur",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20))),
+                            icon: Icon(
+                              Icons.attach_money_rounded,
+                              color: valueFocusNode.hasFocus
+                                  ? color
+                                  : Colors.black,
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: color, width: 1)),
+                            hintText: "Valeur"),
                         controller: valueController,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -163,6 +195,7 @@ Future<void> inputFormDialog(
                     testDropDown(
                         update: updateTransactionType,
                         isRevenue: isRevenue,
+                        color: color,
                         type: transaction?.type),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -175,9 +208,16 @@ Future<void> inputFormDialog(
                         lastDate: DateTime(2100),
                         icon: const Icon(Icons.event),
                         dateLabelText: 'Date',
+                        focusNode: dateFocusNode,
                         decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20))),
+                            icon: Icon(
+                              Icons.date_range_outlined,
+                              color:
+                                  dateFocusNode.hasFocus ? color : Colors.black,
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: color, width: 1))),
                         //use24HourFormat: false,
                         //locale: Locale('pt', 'BR'),
                       ),

@@ -1,5 +1,5 @@
 import 'package:finance_gestion_app/style/app_colors.dart';
-import 'package:finance_gestion_app/utils/firestore_setters.dart';
+import 'package:finance_gestion_app/utils/data_analysis.dart' as analysis;
 import 'package:finance_gestion_app/views/expenses_view.dart';
 import 'package:finance_gestion_app/views/homepage_view.dart';
 import 'package:finance_gestion_app/views/parameters_view.dart';
@@ -7,9 +7,6 @@ import 'package:finance_gestion_app/views/signin_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:finance_gestion_app/models/global.dart' as global;
-
-import 'models/genre.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -83,7 +80,9 @@ class _NavigationState extends State<Navigation> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add_card_outlined),
         onPressed: () async {
-          final snackBar = SnackBar(content: Text("${global.genres[0].types}"));
+          await analysis.calculatePercentageOfMonthlyBudget();
+          final snackBar =
+              SnackBar(content: Text("${analysis.averageMonthSpending}"));
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
           // addTransaction(AppTransaction(

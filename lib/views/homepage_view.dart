@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:finance_gestion_app/models/global.dart' as global;
+import 'package:finance_gestion_app/utils/data_analysis.dart' as analysis;
 
 import '../modified/awesome_dropdown.dart';
 
@@ -32,8 +33,7 @@ class _HomepageViewState extends State<HomepageView> {
     List<AppTransaction> value = await getAppTransactions(global.docId);
     if (mounted) {
       setState(() {
-        monthsCalendarList =
-            getMonthsCalendarTransactions(value).reversed.toList();
+        monthsCalendarList = getMonthsCalendarTransactions(value);
         if (global.selectedMonth == "" ||
             !monthsCalendarList.contains(global.selectedMonth)) {
           global.selectedMonth = monthsCalendarList.first;
@@ -133,25 +133,32 @@ class _HomepageViewState extends State<HomepageView> {
                     crossAxisCellCount: 1,
                     mainAxisCellCount: 1,
                     child: InformationsWidget(
-                        child: LiquidLinearProgressIndicator(
-                      value: 0.54,
-                      valueColor:
-                          const AlwaysStoppedAnimation(AppColors.earning),
-                      backgroundColor: AppColors
-                          .classicGrey, // Defaults to the current Theme's backgroundColor.
-                      borderColor: AppColors.classicGrey,
-                      borderWidth: 1.0,
-                      borderRadius: 24.0,
-                      direction: Axis
-                          .vertical, // The direction the liquid moves (Axis.vertical = bottom to top, Axis.horizontal = left to right). Defaults to Axis.horizontal.
-                      center: Text("54%",
-                          style: TextStyle(
-                              fontFamily: 'Lato',
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black.withOpacity(0.33),
-                              fontSize:
-                                  MediaQuery.of(context).size.width * 0.075)),
-                    )),
+                        child: FutureBuilder(
+                            future:
+                                analysis.calculatePercentageOfMonthlyBudget(),
+                            builder: ((context, snapshot) {
+                              return LiquidLinearProgressIndicator(
+                                value: analysis.averageMonthSpending,
+                                valueColor: const AlwaysStoppedAnimation(
+                                    AppColors.earning),
+                                backgroundColor: AppColors
+                                    .classicGrey, // Defaults to the current Theme's backgroundColor.
+                                borderColor: AppColors.classicGrey,
+                                borderWidth: 1.0,
+                                borderRadius: 24.0,
+                                direction: Axis
+                                    .vertical, // The direction the liquid moves (Axis.vertical = bottom to top, Axis.horizontal = left to right). Defaults to Axis.horizontal.
+                                center: Text(
+                                    "${(analysis.averageMonthSpending * 100).round()}%",
+                                    style: TextStyle(
+                                        fontFamily: 'Lato',
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black.withOpacity(0.33),
+                                        fontSize:
+                                            MediaQuery.of(context).size.width *
+                                                0.075)),
+                              );
+                            }))),
                   ),
                   StaggeredGridTile.count(
                     crossAxisCellCount: 1,
@@ -188,7 +195,7 @@ class _HomepageViewState extends State<HomepageView> {
                                     begin: Alignment.bottomCenter,
                                     end: Alignment.topCenter,
                                     colors: [
-                                      AppColors.payment,
+                                      AppColors.paymentVariant,
                                       Colors.white.withOpacity(0.2)
                                     ])),
                             child: InformationTextWidget(

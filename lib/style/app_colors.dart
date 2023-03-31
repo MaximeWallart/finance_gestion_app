@@ -7,7 +7,8 @@ class AppColors {
   static const accentColorLight = Color(0xFF5B417B);
 
   static const earning = Color(0xFF6FE16F);
-  static const payment = Color(0xFFE8674F);
+  static const payment = Color.fromARGB(255, 232, 143, 79);
+  static const paymentVariant = Color(0xFFE8674F);
 
   static const economy = Color(0xFF80C3FF);
   static const available = Color(0xFFFFEC8A);
@@ -18,18 +19,18 @@ class AppColors {
   static const textLighterBlack = Color.fromARGB(255, 151, 151, 151);
 
   static const List<Color> listCharColors = [
-    Color(0xFF3366CC),
-    Color(0xFFDC3912),
-    Color(0xFFFF9900),
-    Color(0xFF109618),
-    Color(0xFF990099),
-    Color(0xFF3B3EAC),
-    Color(0xFF0099C6),
-    Color(0xFFDD4477),
-    Color(0xFF66AA00),
-    Color(0xFFB82E2E),
-    Color(0xFF316395),
-    Color(0xFF994499),
+    Color(0xFF2B0B3F),
+    Color(0xFFF7B7A3),
+    Color(0xFF9B3192),
+    Color(0xFFEA5F89),
+    Color(0xFF57167E),
+    Color(0xFFFFF1C9),
+    Color(0xFF2B0B3F),
+    Color(0xFF57167E),
+    Color(0xFF9B3192),
+    Color(0xFFEA5F89),
+    Color(0xFFF7B7A3),
+    Color(0xFFFFF1C9),
     Color(0xFF22AA99),
     Color(0xFFAAAA11),
     Color(0xFF6633CC),

@@ -15,7 +15,8 @@ class _RevenueDialogFormState extends State<RevenueDialogForm> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
-        await inputFormDialog(context, "Revenu", AppColors.earning, true);
+        await inputFormDialog(
+            context, "Revenu", AppColors.earning.withOpacity(0.5), true);
       },
       style: ElevatedButton.styleFrom(
           minimumSize: Size(MediaQuery.of(context).size.width * 0.45,

@@ -182,5 +182,14 @@ List<String> getMonthsCalendarTransactions(List<AppTransaction> transaction) {
       result.add(tmp);
     }
   }
+  result.sort(
+    (a, b) {
+      int yearCompare = -(a.split(" ")[1].compareTo(b.split(" ")[1]));
+      if (yearCompare == 0) {
+        return -(getMonthInt(a.split(" ")[0]) - getMonthInt(b.split(" ")[0]));
+      }
+      return yearCompare;
+    },
+  );
   return result;
 }

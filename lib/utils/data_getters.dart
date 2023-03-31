@@ -33,13 +33,16 @@ List<String> getTransactionTypes(bool forRevenue,
   return result;
 }
 
-Future<List<AppTransaction>> getTransactionFromMonth(int month) async {
-  List<AppTransaction> transactions = await getAppTransactions(global.docId);
+Future<List<AppTransaction>> getTransactionFromMonth(int month,
+    [List<AppTransaction>? providedTransactions]) async {
+  List<AppTransaction> transactions =
+      providedTransactions ?? await getAppTransactions(global.docId);
   transactions.removeWhere((element) => element.date.month != month);
   return transactions;
 }
 
-Future<bool> anyTransactionsUseTransactionType(String transactionType, [bool isRevenue = false]) async {
+Future<bool> anyTransactionsUseTransactionType(String transactionType,
+    [bool isRevenue = false]) async {
   List<AppTransaction> transactions =
       await getAppTransactions(global.docId, transactionType, isRevenue);
   if (transactions.isNotEmpty) {
