@@ -237,6 +237,7 @@ Future<void> inputFormDialog(
                           isRevenue: isRevenue);
                       if (transaction == null) {
                         addTransaction(newTransaction);
+                        updateParents!();
                       } else {
                         modifyTransaction(transaction, newTransaction);
                         updateParents!();

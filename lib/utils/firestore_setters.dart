@@ -67,11 +67,13 @@ void updateGenres(List<Genre> genres) {
 
 void addToBalance(AppTransaction transaction) {
   double newBalance = global.account.balance + transaction.value;
+  global.account.balance = newBalance;
   updateBalance(newBalance);
 }
 
 void removeFromBalance(AppTransaction transaction) {
   double newBalance = global.account.balance - transaction.value;
+  global.account.balance = newBalance;
   updateBalance(newBalance);
 }
 

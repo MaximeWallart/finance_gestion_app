@@ -5,8 +5,8 @@ import 'package:finance_gestion_app/models/global.dart' as global;
 
 Future<double> getBalance(String docId) async {
   double result = 0;
-  var doc =
-      FirebaseFirestore.instance.collection(global.collectionName).doc(docId);
+
+  var doc = FirebaseFirestore.instance.collection(global.collectionName).doc(docId);
   DocumentSnapshot documentSnapshot = await doc.get();
   if (documentSnapshot.exists) {
     Map<String, dynamic> optionsDoc =
@@ -39,20 +39,20 @@ Future<List<Genre>> getGenres(String docId, [bool? forRevenue]) async {
   return genres;
 }
 
-Future<List<AppTransaction>> getAppTransactions(String docId,
-    [String? transactionType, bool? isRevenue]) async {
+Future<List<AppTransaction>> getAppTransactions(String docId,[String? transactionType, bool? isRevenue]) async {
+  
   List<AppTransaction> transactions = [];
-  var doc =
-      FirebaseFirestore.instance.collection(global.collectionName).doc(docId);
-  DocumentSnapshot documentSnapshot = await doc.get();
+  var document = FirebaseFirestore.instance.collection(global.collectionName).doc(docId);
+  DocumentSnapshot documentSnapshot = await document.get();
+
   if (documentSnapshot.exists) {
-    Map<String, dynamic> optionsDoc =
-        documentSnapshot.data() as Map<String, dynamic>;
-    List experiences = optionsDoc['Transactions'];
-    for (var element in experiences) {
+    Map<String, dynamic> documentData = documentSnapshot.data() as Map<String, dynamic>;
+    List documentTransactions = documentData['Transactions'];
+    for (var element in documentTransactions) {
       AppTransaction transaction = AppTransaction.fromJson(element);
-      if (isTransactionType(transactionType, transaction.type) &&
-          isItRevenue(isRevenue, transaction.isRevenue)) {
+      if (
+        isTransactionType(transactionType, transaction.type) &&
+        isItRevenue(isRevenue, transaction.isRevenue)) {
         transactions.add(transaction);
       }
     }

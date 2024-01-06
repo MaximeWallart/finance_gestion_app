@@ -3,20 +3,17 @@ import 'package:flutter/material.dart';
 
 import '../style/app_colors.dart';
 
-class RevenueDialogForm extends StatefulWidget {
-  const RevenueDialogForm({super.key});
+class RevenueDialogForm extends StatelessWidget {
+  const RevenueDialogForm(this.refresh,{super.key});
 
-  @override
-  State<RevenueDialogForm> createState() => _RevenueDialogFormState();
-}
+  final Function()? refresh;
 
-class _RevenueDialogFormState extends State<RevenueDialogForm> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
         await inputFormDialog(
-            context, "Revenu", AppColors.earning.withOpacity(0.5), true);
+            context, "Revenu", AppColors.earning.withOpacity(0.5), true, updateParents: refresh);
       },
       style: ElevatedButton.styleFrom(
           minimumSize: Size(MediaQuery.of(context).size.width * 0.45,

@@ -50,6 +50,7 @@ dependencies:
   settings_ui: ^2.0.2
   intl: ^0.17.0
   dynamic_color: ^1.5.4
+  firebase_core_web: ^2.5.0
 
 dev_dependencies:
   flutter_test:

@@ -3,19 +3,16 @@ import 'package:flutter/material.dart';
 
 import '../style/app_colors.dart';
 
-class ExpenseDialogForm extends StatefulWidget {
-  const ExpenseDialogForm({super.key});
+class ExpenseDialogForm extends StatelessWidget {
+  const ExpenseDialogForm(this.refresh, {super.key});
 
-  @override
-  State<ExpenseDialogForm> createState() => _ExpenseDialogFormState();
-}
+  final Function()? refresh;
 
-class _ExpenseDialogFormState extends State<ExpenseDialogForm> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
-        await inputFormDialog(context, "Achat", AppColors.payment, false);
+        await inputFormDialog(context, "Achat", AppColors.payment, false, updateParents: refresh);
       },
       style: ElevatedButton.styleFrom(
           minimumSize: Size(MediaQuery.of(context).size.width * 0.45,

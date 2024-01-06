@@ -19,13 +19,13 @@ Future<void> calculatePercentageOfMonthlyBudget() async {
 
   String monthString = global.selectedMonth.split(" ")[0];
   int month = getMonthInt(monthString);
-  var thisMonthTransactions =
-      await getTransactionFromMonth(month, allTransactions);
+  var thisMonthTransactions = await getTransactionFromMonth(month,
+      providedTransactions: allTransactions);
   thisMonthSpending = sumUpListValues(thisMonthTransactions);
 
   averageMonthSpending = (thisMonthSpending /
-              ((totalSpending - thisMonthSpending) /
-                  getMonthsCalendarTransactions(allTransactions).length));
+      ((totalSpending - thisMonthSpending) /
+          getMonthsCalendarTransactions(allTransactions).length));
 }
 
 double sumUpListValues(List<AppTransaction> transactions) {

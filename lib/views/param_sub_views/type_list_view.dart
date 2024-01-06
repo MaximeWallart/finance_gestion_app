@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -66,6 +68,9 @@ class _TypeListViewState extends State<TypeListView> {
     ));
   }
 
+  String noReplacementPossibleMessage =
+      "Vous ne pouvez pas supprimer ce type car des transactions l'utilise et qu'il n'y a pas d'autre type pour le remplacer";
+
   Container listOfTransactionTypes(bool forRevenue) {
     List<String> typesList = data.getTransactionTypes(forRevenue);
     return Container(
@@ -122,8 +127,8 @@ class _TypeListViewState extends State<TypeListView> {
                                       borderRadius: BorderRadius.circular(20)),
                                   content: SizedBox(
                                       width: MediaQuery.of(context).size.width,
-                                      child: const Text(
-                                          "Vous ne pouvez pas supprimer ce type car des transactions l'utilise et qu'il n'y a pas d'autre type pour le remplacer")),
+                                      child: Text(
+                                          noReplacementPossibleMessage)),
                                 );
                               });
                             });
@@ -304,14 +309,14 @@ Future<void> askReplacementPopUp(BuildContext context, Function() setState,
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: DropdownButton(
+                        child: DropdownButtonFormField(
                             items: listDropdown,
                             borderRadius: BorderRadius.circular(20),
                             value: selectedTransactionType,
+                            validator: (value) => value == null ? "Veuillez choisir un type" : null,
                             onChanged: ((value) {
                               setPopUpState(
                                   () => selectedTransactionType = value);
-                              print(selectedTransactionType);
                             })),
                       ),
                     ]))),

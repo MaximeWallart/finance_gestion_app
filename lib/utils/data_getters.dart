@@ -34,10 +34,13 @@ List<String> getTransactionTypes(bool forRevenue,
 }
 
 Future<List<AppTransaction>> getTransactionFromMonth(int month,
-    [List<AppTransaction>? providedTransactions]) async {
+    {List<AppTransaction>? providedTransactions, bool? isRevenue}) async {
   List<AppTransaction> transactions =
       providedTransactions ?? await getAppTransactions(global.docId);
   transactions.removeWhere((element) => element.date.month != month);
+  if (isRevenue != null) {
+    transactions.removeWhere((element) => element.isRevenue != isRevenue);
+  }
   return transactions;
 }
 

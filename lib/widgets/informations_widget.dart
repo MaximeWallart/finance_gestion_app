@@ -78,12 +78,12 @@ class TransactionPieChartState extends State<TransactionPieChart> {
 
   Future<void> initTransaction() async {
     transactionsMonth =
-        await getTransactionFromMonth(getMonthInt(widget.selectedMonth));
+        await getTransactionFromMonth(getMonthInt(widget.selectedMonth), isRevenue: false);
   }
 
   Future<void> setSelectedMonth(String selectedMonth) async {
     transactionsMonth =
-        await getTransactionFromMonth(getMonthInt(selectedMonth));
+        await getTransactionFromMonth(getMonthInt(selectedMonth), isRevenue: false);
     initPieChartDataList();
     selectedValue = pieChartSectionDataList[0].title;
     percentageSelected =

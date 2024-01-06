@@ -44,8 +44,9 @@ class _HomepageViewState extends State<HomepageView> {
 
   Future<bool> canDoPieChart() async {
     await initMonthsCalendarList();
-    var transactions =
-        await getTransactionFromMonth(getMonthInt(global.selectedMonth));
+    var transactions = await getTransactionFromMonth(
+        getMonthInt(global.selectedMonth),
+        isRevenue: false);
     return transactions.isNotEmpty;
   }
 
@@ -114,7 +115,8 @@ class _HomepageViewState extends State<HomepageView> {
                       child: InformationsWidget(
                         child: FutureBuilder(
                             future: getTransactionFromMonth(
-                                getMonthInt(global.selectedMonth)),
+                                getMonthInt(global.selectedMonth),
+                                isRevenue: false),
                             builder: (context, snapshot) {
                               if (global.selectedMonth != "" &&
                                   snapshot.connectionState ==
@@ -238,7 +240,14 @@ class _HomepageViewState extends State<HomepageView> {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [RevenueDialogForm(), ExpenseDialogForm()],
+              children: [
+                RevenueDialogForm(() {
+                  setState(() {});
+                }),
+                ExpenseDialogForm(() {
+                  setState(() {});
+                })
+              ],
             )
           ],
         ),

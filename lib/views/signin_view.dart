@@ -33,14 +33,14 @@ class _SignInViewState extends State<SignInView> {
                   children: const [
                     SizedBox(height: 20),
                     Text(
-                      'FlutterFire',
+                      'Tambo Connect',
                       style: TextStyle(
                         color: AppColors.accentColorLight,
                         fontSize: 40,
                       ),
                     ),
                     Text(
-                      'Authentication',
+                      'Connection',
                       style: TextStyle(
                         color: AppColors.accentColor,
                         fontSize: 40,
